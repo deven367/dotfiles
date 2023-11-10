@@ -12,6 +12,8 @@ intb () { salloc -p gpu -A r00286 --nodes=1 --tasks-per-node=1 --gpus-per-node=1
 # download youtube mp3
 get_mp3 () { yt-dlp -x --audio-format mp3 "${1}"; }
 
+nbclean () { nbdev_clean --fname "${1}"; }
+
 alias a=alias
 
 a issues="gh issue list"
