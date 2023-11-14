@@ -12,7 +12,12 @@ intb () { salloc -p gpu -A r00286 --nodes=1 --tasks-per-node=1 --gpus-per-node=1
 # download youtube mp3
 get_mp3 () { yt-dlp -x --audio-format mp3 "${1}"; }
 
+# handy for cleaning nbs
 nbclean () { nbdev_clean --fname "${1}"; }
+
+# simple commands to loop certain commands
+loop1 () { watch -n 1 "${1}"; }
+loop () { watch -n ${1} "${2}"; }
 
 alias a=alias
 
