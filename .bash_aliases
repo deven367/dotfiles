@@ -47,7 +47,8 @@ a ping_bigred='ping -c5 bigred200.uits.iu.edu'
 a ll='ls -laF'
 a t="todo.sh"
 
-
+a pending_gpu="squeue -p gpu -t PD --sort=+i"
+a running_gpu="squeue -p gpu -t R --sort=+i"
 
 export PATH=$PATH:~/bin
 export MODULAR_HOME=~/.modular
