@@ -9,6 +9,9 @@ intc () { srun --nodes=1 --ntasks-per-node=1 --time=0${1}:00:00 -p gpu -A r00308
 # interactive job on bigred200
 intb () { salloc -p gpu -A r00286 --nodes=1 --tasks-per-node=1 --gpus-per-node=1 --mem=16GB --time=0${1}:00:00; }
 
+intbd () { salloc -p gpu-debug -A r00286 --nodes=1 --tasks-per-node=1 --gpus-per-node=1 --mem=16GB --time=0${1}:00:00; }
+
+
 # download youtube mp3
 get_mp3 () { yt-dlp -x --audio-format mp3 "${1}"; }
 
