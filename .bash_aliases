@@ -55,7 +55,7 @@ a running_gpu="squeue -p gpu -t R --sort=+i"
 
 a pending="squeue -t PD --sort=+i"
 a running="squeue -t R --sort=+i"
-
+a jobs="squeue --me"
 
 
 export PATH=$PATH:~/bin
