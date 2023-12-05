@@ -59,6 +59,10 @@ a running_gpu="squeue -p gpu -t R --sort=+i"
 
 a pending="squeue -t PD --sort=+i"
 a running="squeue -t R --sort=+i"
+
+a pgd="pending -p gpu-debug"
+a rgd="running -p gpu-debug"
+
 a jobs="squeue --me"
 
 
