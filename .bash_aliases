@@ -11,6 +11,10 @@ intb () { salloc -p gpu -A r00286 --nodes=1 --tasks-per-node=1 --gpus-per-node=1
 
 intbd () { salloc -p gpu-debug -A r00286 --nodes=1 --tasks-per-node=1 --gpus-per-node=1 --mem=16GB --time=0${1}:00:00; }
 
+# view txt and err files from the sqlite database
+view_txt () { sqlite3 job_results.db "select txt_content from job_results where job_id = '${1}';" > ${1}.txt; }
+view_err () { sqlite3 job_results.db "select err_content from job_results where job_id = '${1}';" > ${1}.err; }
+
 
 # download youtube mp3
 get_mp3 () { yt-dlp -x --audio-format mp3 "${1}"; }
@@ -54,6 +58,15 @@ a gpl="git pull"
 
 a pending_gpu="squeue -p gpu -t PD --sort=+i"
 a running_gpu="squeue -p gpu -t R --sort=+i"
+
+a pending="squeue -t PD --sort=+i"
+a running="squeue -t R --sort=+i"
+
+a pgd="pending -p gpu-debug"
+a rgd="running -p gpu-debug"
+
+a jobs="squeue --me"
+
 
 export PATH=$PATH:~/bin
 export MODULAR_HOME=~/.modular
