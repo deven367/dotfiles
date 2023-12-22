@@ -55,6 +55,8 @@ a ll='ls -laF'
 a t="todo.sh"
 a push="git push"
 a pull="git pull"
+a mpull="ls | xargs -I{} git -C {} pull"
+
 
 a pending_gpu="squeue -p gpu -t PD --sort=+i"
 a running_gpu="squeue -p gpu -t R --sort=+i"
