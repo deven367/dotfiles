@@ -55,7 +55,7 @@ a ll='ls -laF'
 a t="todo.sh"
 a push="git push"
 a pull="git pull"
-a mpull="ls | xargs -I{} git -C {} pull"
+a mpull="find . -name ".git" -type d | sed 's/\/.git//' |  xargs -P10 -I{} git -C {} pull"
 
 
 a pending_gpu="squeue -p gpu -t PD --sort=+i"
