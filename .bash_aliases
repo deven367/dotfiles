@@ -26,6 +26,8 @@ nbclean () { nbdev_clean --fname "${1}"; }
 loop1 () { watch -n 1 "${1}"; }
 loop () { watch -n ${1} "${2}"; }
 
+cvt-whisper () { ffmpeg -i "${1}" -ar 16000 -ac 1 -c:a pcm_s16le "${1:0:-4}.wav";}
+
 alias a=alias
 
 a issues="gh issue list"
