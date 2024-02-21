@@ -16,7 +16,7 @@ def main():
 
     params = {
         "key": os.getenv(
-            "API_KEY", open("/Users/deven367/geminipro-key.txt").read().strip()
+            "API_KEY", open("/home/demistry/geminipro-key.txt").read().strip()
         ),
     }
 
