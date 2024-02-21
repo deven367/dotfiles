@@ -79,3 +79,13 @@ if [ $ans = "y" ]; then
     ln -s -f ~/dotfiles/.bash_aliases
     echo "done"
 fi
+
+# create a symbolic link to the bin directory
+echo -n "create symbolic link to bin directory? [y/n]: "
+read ans
+
+if [ $ans = "y" ]; then
+    echo "creating symbolic link to bin directory"
+    ln -s -f ~/dotfiles/bin
+    echo "done"
+fi
