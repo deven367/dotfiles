@@ -1,0 +1,64 @@
+#!/Users/deven367/miniforge3/envs/torch/bin/python
+
+import os
+import sys
+
+import requests
+from rich.console import Console
+from rich.markdown import Markdown
+
+
+def main():
+    headers = {
+        "Content-Type": "application/json",
+    }
+
+    params = {
+        "key": os.getenv(
+            "API_KEY", open("/Users/deven367/geminipro-key.txt").read().strip()
+        ),
+    }
+
+    json_data = {
+        "contents": [
+            {
+                "role": "user",
+                "parts": [
+                    {
+                        "text": sys.argv[1],
+                    },
+                ],
+            },
+        ],
+    }
+
+    response = requests.post(
+        "https://generativelanguage.googleapis.com/v1/models/gemini-pro:generateContent",
+        params=params,
+        headers=headers,
+        json=json_data,
+    )
+    data = response.json()
+
+    console = Console()
+
+    # access keys using the get method
+    # md = Markdown(data['candidates'][0]['content']['parts'][0]['text'])
+    # data.get('candidates')[0].get('content').get('parts')[0].get('text')
+    md = Markdown(data.get("candidates")[0].get("content").get("parts")[0].get("text"))
+    console.print(md)
+    # console.print(data)
+
+    # Note: json_data will not be serialized by requests
+    # exactly as it was in the original request.
+    # data = '{"contents":[\n            {"role": "user",\n              "parts":[{"text": "Give me five subcategories of jazz?"}]}]}'
+    # response = requests.post(
+    #    'https://generativelanguage.googleapis.com/v1/models/gemini-pro:generateContent',
+    #    params=params,
+    #    headers=headers,
+    #    data=data,
+    # )
+
+
+if __name__ == "__main__":
+    main()
