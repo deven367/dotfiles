@@ -1,4 +1,4 @@
-#!bin/bash
+#!/bin/bash
 
 echo -n "setup miniforge? [y/n]: "
 read ans
