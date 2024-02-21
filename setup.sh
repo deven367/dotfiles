@@ -86,6 +86,6 @@ read ans
 
 if [ $ans = "y" ]; then
     echo "creating symbolic link to bin directory"
-    ln -s -f ~/dotfiles/bin
+    ln -s ./bin ~/bin
     echo "done"
 fi
