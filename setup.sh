@@ -76,7 +76,7 @@ read ans
 
 if [ $ans = "y" ]; then
     echo "creating symbolic link to .bash_aliases"
-    ln -s -f ~/dotfiles/.bash_aliases
+    ln -s ~/dotfiles/.bash_aliases ~/.bash_aliases
     echo "done"
 fi
 
@@ -86,6 +86,6 @@ read ans
 
 if [ $ans = "y" ]; then
     echo "creating symbolic link to bin directory"
-    ln -s -f ~/dotfiles/bin
+    ln -s ~/dotfiles/bin ~/bin
     echo "done"
 fi
