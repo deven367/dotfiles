@@ -58,7 +58,7 @@ a t="todo.sh"
 a push="git push"
 a pull="git pull"
 a mpull="find . -name ".git" -type d | sed 's/\/.git//' |  xargs -P10 -I{} git -C {} pull"
-
+a sizes="du -sh * | sort -rh"
 
 a pending_gpu="squeue -p gpu -t PD --sort=+i"
 a running_gpu="squeue -p gpu -t R --sort=+i"
