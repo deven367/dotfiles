@@ -1,0 +1,28 @@
+#!/home/demistry/mambaforge/envs/torch/bin/python
+
+
+import google.generativeai as genai
+from rich.console import Console
+from rich.markdown import Markdown
+from rich.prompt import Prompt
+
+
+def main():
+    genai.configure(api_key=open("/home/demistry/geminipro-key.txt").read().strip())
+
+    model = genai.GenerativeModel("gemini-pro-vision")
+    chat = model.start_chat(history=[])
+    console = Console()
+
+    while True:
+        y = 'You'
+        user_input = Prompt.ask(f"{y:>10}")
+
+        if user_input in ["bye", "Bye", "quit", "Quit"]:
+            break
+        r = chat.send_message(user_input)
+        console.print(Markdown(f"Gemini Pro: {r.text}"))
+
+
+if __name__ == "__main__":
+    main()
