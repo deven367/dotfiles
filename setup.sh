@@ -89,3 +89,15 @@ if [ $ans = "y" ]; then
     ln -s ~/dotfiles/bin ~/bin
     echo "done"
 fi
+
+# download yt-dlp
+echo -n "download yt-dlp? [y/n]: "
+read ans
+
+if [ $ans = "y" ]; then
+    echo "downloading yt-dlp"
+    # download yt-dlp
+    wget https://github.com/yt-dlp/yt-dlp/releases/latest/download/yt-dlp -O ~/bin/yt-dlp
+    chmod a+rx ~/bin/yt-dlp  # Make executable
+    echo "done"
+fi
