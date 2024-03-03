@@ -50,9 +50,6 @@ a cdd="conda deactivate"
 a mktorch="conda create -yn torch python=3.10"
 a cals="conda env list"
 a gs='git status'
-a connect_bigred='ssh bigred200'
-a connect_carbonate='ssh carbonate'
-a ping_bigred='ping -c5 bigred200.uits.iu.edu'
 a ll='ls -laF'
 a t="todo.sh"
 a push="git push"
