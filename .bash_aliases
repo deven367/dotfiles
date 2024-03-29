@@ -1,7 +1,6 @@
 commit () { git commit -am "${1}" && git push; }
 fixes () { git commit -am "fixes #${1}" && git push; }
 pypi () { pip install "${1}"; }
-ps () { pip show ${1}; }
 count () { find "${1}" -type f | rev | cut -d. -f1 | rev  | tr '[:upper:]' '[:lower:]' | sort | uniq --count | sort -rn; }
 # interactive job on carbonate
 intc () { srun --nodes=1 --ntasks-per-node=1 --time=0${1}:00:00 -p gpu -A r00308 --gpus-per-node=v100:1 --pty bash -i; }
