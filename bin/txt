@@ -1,0 +1,2 @@
+#!/bin/bash
+~/projects/whisper.cpp/main -m ~/projects/whisper.cpp/models/ggml-base.bin -f "${1}" -otxt
