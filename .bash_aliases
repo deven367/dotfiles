@@ -67,7 +67,7 @@ a running="squeue -t R --sort=+i"
 a pgd="pending -p gpu-debug"
 a rgd="running -p gpu-debug"
 
-a jobs="squeue --me"
+a jobs="squeue --me --sort=+i"
 
 
 export PATH=$PATH:~/bin
