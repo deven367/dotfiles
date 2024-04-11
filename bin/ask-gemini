@@ -1,4 +1,4 @@
-#!/Users/deven367/miniforge3/envs/torch/bin/python
+#!/home/demistry/mambaforge/envs/torch/bin/python
 
 
 import os

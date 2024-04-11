@@ -1,4 +1,4 @@
-#!/Users/deven367/miniforge3/envs/torch/bin/python
+#!/home/demistry/mambaforge/envs/torch/bin/python
 import anthropic
 from rich.console import Console
 from rich.markdown import Markdown
@@ -12,7 +12,7 @@ def find_pos(s, match):
 
 # Function to send a message to the OpenAI chatbot model and return its response
 def send_message(message_log):
-    api_key = open("/Users/deven367/anthropic-key.txt").read().strip()
+    api_key = open("/home/demistry/anthropic-key.txt").read().strip()
     client = anthropic.Client(api_key=api_key)
 
     response = client.messages.create(

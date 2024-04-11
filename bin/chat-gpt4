@@ -1,5 +1,4 @@
-#!/Users/deven367/miniforge3/envs/torch/bin/python
-
+#!/home/demistry/mambaforge/envs/torch/bin/python
 import os
 
 from openai import OpenAI
@@ -7,7 +6,7 @@ from rich.console import Console
 from rich.markdown import Markdown
 from rich.prompt import Prompt
 
-os.environ["OPENAI_API_KEY"] = open("/Users/deven367/openai-key.txt").read().strip()
+os.environ["OPENAI_API_KEY"] = open("/home/demistry/openai-key.txt").read().strip()
 
 
 def find_pos(s, match):
