@@ -3,13 +3,15 @@ fixes () { git commit -am "fixes #${1}" && git push; }
 pypi () { pip install "${1}"; }
 count () { find "${1}" -type f | rev | cut -d. -f1 | rev  | tr '[:upper:]' '[:lower:]' | sort | uniq --count | sort -rn; }
 # interactive job on carbonate
-intc () { srun --nodes=1 --ntasks-per-node=1 --time=0${1}:00:00 -p gpu -A r00308 --gpus-per-node=v100:1 --pty bash -i; }
+intq ()   { srun --nodes=1 --ntasks-per-node=1 --time=0${1}:00:00 -p gpu -A r00308 --gpus-per-node=v100:1 --pty bash -i; }
+intqd ()  { srun --nodes=1 --ntasks-per-node=1 --time=01:00:00 -p gpu-debug -A r00308 --gpus-per-node=v100:1 --pty bash -i; }
+intqd4 () { srun --nodes=1 --ntasks-per-node=1 --time=01:00:00 -p gpu-debug -A r00308 --gpus-per-node=v100:4 --mem=0 --pty bash -i; }
 
 # interactive job on bigred200
 intb () { salloc -p gpu -A r00286 --nodes=1 --tasks-per-node=1 --gpus-per-node=1 --mem=16GB --time=0${1}:00:00; }
 intbd ()   { salloc -p gpu-debug -A r00286 --nodes=1 --tasks-per-node=1 --gpus-per-node=1 --time=01:00:00; }
-intbd4 ()  { salloc -p gpu-debug -A r00286 --nodes=1 --tasks-per-node=1 --gpus-per-node=4 --time=01:00:00; }
-intbd42 () { salloc -p gpu-debug -A r00286 --nodes=2 --tasks-per-node=1 --gpus-per-node=4 --time=01:00:00; }
+intbd4 ()  { salloc -p gpu-debug -A r00286 --nodes=1 --tasks-per-node=1 --gpus-per-node=4 --mem=0 --time=01:00:00; }
+intbd42 () { salloc -p gpu-debug -A r00286 --nodes=2 --tasks-per-node=1 --gpus-per-node=4 --mem=0 --time=01:00:00; }
 
 
 # view txt and err files from the sqlite database
