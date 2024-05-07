@@ -73,4 +73,9 @@ a jobs="squeue --me --sort=+i"
 
 
 export PATH=$PATH:~/bin
-export MODULAR_HOME=~/.modular
+
+if [ -d ~/.modular ]; then
+    export MODULAR_HOME="~/.modular"
+    export PATH="/Users/deven367/.modular/pkg/packages.modular.com_mojo/bin:$PATH"
+fi
+
