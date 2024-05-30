@@ -20,7 +20,7 @@ view_err () { sqlite3 ~/job_results.db "select err_content from job_results wher
 
 
 # download youtube mp3
-get_mp3 () { yt-dlp -x --audio-format mp3 "${1}"; }
+get_mp3 () { yt-dlp -x --audio-format mp3 -o '%(id)s.audio.%(ext)s' "${1}"; }
 
 # handy for cleaning nbs
 nbclean () { nbdev_clean --fname "${1}"; }
