@@ -20,7 +20,7 @@ view_err () { sqlite3 ~/job_results.db "select err_content from job_results wher
 
 
 # download youtube mp3
-get_mp3 () { yt-dlp -x --audio-format mp3 -o '%(id)s.audio.%(ext)s' "${1}"; }
+get_mp3 () { yt-dlp -x --audio-format mp3 -o '%(id)s.%(ext)s' "${1}"; }
 
 # handy for cleaning nbs
 nbclean () { nbdev_clean --fname "${1}"; }
@@ -57,6 +57,7 @@ a ll='ls -laF'
 a t="todo.sh"
 a push="git push"
 a pull="git pull"
+a grv="git remote -v"
 a mpull="find . -name ".git" -type d | sed 's/\/.git//' |  xargs -P10 -I{} git -C {} pull"
 a sizes="du -sh * | sort -rh"
 
@@ -78,4 +79,3 @@ if [ -d ~/.modular ]; then
     export MODULAR_HOME="~/.modular"
     export PATH="/Users/deven367/.modular/pkg/packages.modular.com_mojo/bin:$PATH"
 fi
-
