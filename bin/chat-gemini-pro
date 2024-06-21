@@ -2,13 +2,14 @@
 
 
 import google.generativeai as genai
+from paths import PATH
 from rich.console import Console
 from rich.markdown import Markdown
 from rich.prompt import Prompt
 
 
 def main():
-    genai.configure(api_key=open("/Users/deven367/geminipro-key.txt").read().strip())
+    genai.configure(api_key=open(PATH / "geminipro-key.txt").read().strip())
 
     model = genai.GenerativeModel("gemini-pro")
     chat = model.start_chat(history=[])
