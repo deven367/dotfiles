@@ -73,7 +73,9 @@ a rgd="running -p gpu-debug"
 a jobs="squeue --me --sort=+i"
 
 
-export PATH=$PATH:~/bin
+if [ -d ~/.local ]; then
+    export PATH=$PATH:~/bin:/home/demistry/.local/bin
+fi
 
 if [ -d ~/.modular ]; then
     export MODULAR_HOME="~/.modular"
