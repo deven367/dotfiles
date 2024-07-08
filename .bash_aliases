@@ -1,4 +1,4 @@
-commit () { git commit -am "${1}" && git push; }
+commit () { git commit -m "${1}" && git push; }
 fixes () { git commit -am "fixes #${1}" && git push; }
 pypi () { pip install "${1}"; }
 count () { find "${1}" -type f | rev | cut -d. -f1 | rev  | tr '[:upper:]' '[:lower:]' | sort | uniq --count | sort -rn; }
