@@ -1,3 +1,4 @@
+gadd () { git add "${1}"; }
 commit () { git commit -m "${1}" && git push; }
 fixes () { git commit -am "fixes #${1}" && git push; }
 pypi () { pip install "${1}"; }
