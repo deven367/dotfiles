@@ -1,4 +1,4 @@
-#!/home/demistry/mambaforge/envs/torch/bin/python
+#!/home/demistry/miniforge3/envs/torch/bin/python
 import anthropic
 from rich.console import Console
 from rich.markdown import Markdown

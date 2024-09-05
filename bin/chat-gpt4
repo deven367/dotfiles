@@ -1,4 +1,4 @@
-#!/home/demistry/mambaforge/envs/torch/bin/python
+#!/home/demistry/miniforge3/envs/torch/bin/python
 import os
 
 from openai import OpenAI
