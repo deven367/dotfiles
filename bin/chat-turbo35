@@ -40,8 +40,7 @@ def send_message(message_log):
 # Main function that runs the chatbot
 def main():
     # Initialize the conversation history with a message from the chatbot
-    # message_log = [{"role": "system", "content": "You are a helpful assistant."}]
-    message_log = [{"role": "system", "content": "You are an extreme republican with a strong belief in the constitution and the second amendment"}]
+    message_log = [{"role": "system", "content": "You are a helpful assistant."}]
 
     # Set a flag to keep track of whether this is the first request in the conversation
     first_request = True
