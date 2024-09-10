@@ -1,15 +1,20 @@
-commit () { git commit -am "${1}" && git push; }
+gadd () { git add "${1}"; }
+commit () { git commit -m "${1}" && git push; }
 fixes () { git commit -am "fixes #${1}" && git push; }
 pypi () { pip install "${1}"; }
 count () { find "${1}" -type f | rev | cut -d. -f1 | rev  | tr '[:upper:]' '[:lower:]' | sort | uniq --count | sort -rn; }
 # interactive job on carbonate
-intc () { srun --nodes=1 --ntasks-per-node=1 --time=0${1}:00:00 -p gpu -A r00308 --gpus-per-node=v100:1 --pty bash -i; }
+intq ()   { srun --nodes=1 --ntasks-per-node=1 --time=0${1}:00:00 -p gpu -A r00308 --gpus-per-node=v100:1 --pty bash -i; }
+intqd ()  { srun --nodes=1 --ntasks-per-node=1 --time=01:00:00 -p gpu-debug -A r00308 --gpus-per-node=v100:1 --pty bash -i; }
+intqd4 () { srun --nodes=1 --ntasks-per-node=1 --time=01:00:00 -p gpu-debug -A r00308 --gpus-per-node=v100:4 --mem=0 --pty bash -i; }
 
 # interactive job on bigred200
-intb () { salloc -p gpu -A r00286 --nodes=1 --tasks-per-node=1 --gpus-per-node=1 --mem=16GB --time=0${1}:00:00; }
+intb ()    { salloc -p gpu -A r00286 --nodes=1 --tasks-per-node=1 --gpus-per-node=1 --mem=16GB --time=0${1}:00:00; }
+intbc ()   { salloc -p general -A r00286 --nodes=1 --tasks-per-node=1 --mem=64GB --time=0${1}:00:00; }
+intbd ()   { salloc -p gpu-debug -A r00286 --nodes=1 --tasks-per-node=1 --gpus-per-node=1 --mem=64G --time=01:00:00; }
+intbd4 ()  { salloc -p gpu-debug -A r00286 --nodes=1 --tasks-per-node=1 --gpus-per-node=4 --mem=0 --time=01:00:00; }
+intbd42 () { salloc -p gpu-debug -A r00286 --nodes=2 --tasks-per-node=1 --gpus-per-node=4 --mem=0 --time=01:00:00; }
 
-intbd () { salloc -p gpu-debug -A r00286 --nodes=1 --tasks-per-node=1 --gpus-per-node=1 --mem=16GB --time=0${1}:00:00; }
-intbd4 () { salloc -p gpu-debug -A r00286 --nodes=1 --tasks-per-node=1 --gpus-per-node=4 --time=01:00:00; }
 
 # view txt and err files from the sqlite database
 view_txt () { sqlite3 ~/job_results.db "select txt_content from job_results where job_id = '${1}';" > ${1}.txt; }
@@ -17,7 +22,7 @@ view_err () { sqlite3 ~/job_results.db "select err_content from job_results wher
 
 
 # download youtube mp3
-get_mp3 () { yt-dlp -x --audio-format mp3 -o '%(id)s.audio.%(ext)s' "${1}"; }
+get_mp3 () { yt-dlp -x --audio-format mp3 -o '%(id)s.%(ext)s' "${1}"; }
 
 # handy for cleaning nbs
 nbclean () { nbdev_clean --fname "${1}"; }
@@ -54,6 +59,7 @@ a ll='ls -laF'
 a t="todo.sh"
 a push="git push"
 a pull="git pull"
+a grv="git remote -v"
 a mpull="find . -name ".git" -type d | sed 's/\/.git//' |  xargs -P10 -I{} git -C {} pull"
 a sizes="du -sh * | sort -rh"
 
@@ -66,8 +72,15 @@ a running="squeue -t R --sort=+i"
 a pgd="pending -p gpu-debug"
 a rgd="running -p gpu-debug"
 
-a jobs="squeue --me"
+a jobs="squeue --me --sort=+i"
 
 
-export PATH=$PATH:~/bin
-export MODULAR_HOME=~/.modular
+if [ -d ~/.local ]; then
+    export PATH=$PATH:~/bin:/home/demistry/.local/bin
+    export PATH=$PATH:"/Applications/Racket v8.14/bin"
+fi
+
+if [ -d ~/.modular ]; then
+    export MODULAR_HOME="~/.modular"
+    export PATH="/Users/deven367/.modular/pkg/packages.modular.com_mojo/bin:$PATH"
+fi
