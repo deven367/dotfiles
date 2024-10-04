@@ -33,6 +33,9 @@ loop () { watch -n ${1} "${2}"; }
 
 cvt-whisper () { ffmpeg -i "${1}" -ar 16000 -ac 1 -c:a pcm_s16le "${1:0:-4}.wav";}
 
+# pandoc
+word_to_md () { pandoc -t markdown_strict --extract-media="./attachments/${1}" "${1}" -o "${1:0:-5}.md"; }
+
 alias a=alias
 
 a issues="gh issue list"
