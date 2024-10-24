@@ -12,7 +12,7 @@ def send_message(message_log):
     client = anthropic.Client(api_key=api_key)
 
     response = client.messages.create(
-        model="claude-3-5-sonnet-20240620",
+        model="claude-3-5-sonnet-latest",
         max_tokens=3800,
         system="Respond like a no non-sense assistant who answers to the point without any bullshit",
         messages=message_log,
