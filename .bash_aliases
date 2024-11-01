@@ -87,3 +87,7 @@ if [ -d ~/.modular ]; then
     export MODULAR_HOME="~/.modular"
     export PATH="/Users/deven367/.modular/pkg/packages.modular.com_mojo/bin:$PATH"
 fi
+
+export OPENAI_API_KEY=$(cat ~/openai-key.txt)
+export ANTHROPIC_API_KEY=$(cat ~/anthropic-key.txt)
+export GEMINI_API_KEY=$(cat ~/geminipro-key.txt)
