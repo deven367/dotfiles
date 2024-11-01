@@ -1,4 +1,4 @@
-#!/Users/deven367/miniforge3/envs/torch/bin/python
+#!/home/demistry/miniforge3/envs/torch/bin/python
 import anthropic
 from paths import PATH
 from rich.console import Console
