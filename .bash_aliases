@@ -79,7 +79,7 @@ a jobs="squeue --me --sort=+i"
 
 
 if [ -d ~/.local ]; then
-    export PATH=$PATH:~/bin:/home/demistry/.local/bin
+    export PATH=$PATH:~/bin:/home/demistry/.local/bin:~/gh/bin
     export PATH=$PATH:"/Applications/Racket v8.14/bin"
 fi
 
