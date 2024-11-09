@@ -3,3 +3,7 @@ yt-dlp
 *.mp4
 __pycache__
 .DS_Store
+ffmpeg
+ffplay
+ffprobe
+ffserver
