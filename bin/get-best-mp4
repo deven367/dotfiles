@@ -1,2 +1,8 @@
 #!/bin/bash
-yt-dlp -f 'bestvideo[ext=mp4]+bestaudio[ext=m4a]/best[ext=mp4]/best' "${1}"
+insta=${1}
+
+if [ $insta == 'insta' ]; then
+    yt-dlp -f 'bestvideo[height<=720]+bestaudio[ext=m4a]/best[height<=720]' -o '%(title)s.%(ext)s' --merge-output-format mp4 --cookies-from-browser safari "${2}"
+else
+    yt-dlp -f 'bestvideo[ext=mp4]+bestaudio[ext=m4a]/best[ext=mp4]/best' "${1}"
+fi
