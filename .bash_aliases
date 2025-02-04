@@ -3,10 +3,10 @@ commit () { git commit -m "${1}" && git push; }
 fixes () { git commit -am "fixes #${1}" && git push; }
 pypi () { pip install "${1}"; }
 count () { find "${1}" -type f | rev | cut -d. -f1 | rev  | tr '[:upper:]' '[:lower:]' | sort | uniq --count | sort -rn; }
-# interactive job on quartz
-intq ()   { salloc --nodes=1 --ntasks-per-node=1 --time=0${1}:00:00 -p gpu -A r00286 --gpus-per-node=v100:1 --mem=64GB; }
-intqd ()  { salloc --nodes=1 --ntasks-per-node=1 --time=01:00:00 -p gpu-debug -A r00286 --gpus-per-node=v100:1 --mem=64GB; }
-intqd4 () { salloc --nodes=1 --ntasks-per-node=1 --time=01:00:00 -p gpu-debug -A r00286 --gpus-per-node=v100:4 --mem=0; }
+# interactive job on carbonate
+intq ()   { srun --nodes=1 --ntasks-per-node=1 --time=0${1}:00:00 -p gpu -A r00308 --gpus-per-node=v100:1 --pty bash -i; }
+intqd ()  { srun --nodes=1 --ntasks-per-node=1 --time=01:00:00 -p gpu-debug -A r00308 --gpus-per-node=v100:1 --pty bash -i; }
+intqd4 () { srun --nodes=1 --ntasks-per-node=1 --time=01:00:00 -p gpu-debug -A r00308 --gpus-per-node=v100:4 --mem=0 --pty bash -i; }
 
 # interactive job on bigred200
 intb ()    { salloc -p gpu -A r00286 --nodes=1 --tasks-per-node=1 --gpus-per-node=1 --mem=16GB --time=0${1}:00:00; }
