@@ -16,6 +16,10 @@ intbd ()   { salloc -p gpu-debug -A r00286 --nodes=1 --tasks-per-node=1 --gpus-p
 intbd4 ()  { salloc -p gpu-debug -A r00286 --nodes=1 --tasks-per-node=1 --gpus-per-node=4 --mem=0 --time=01:00:00; }
 intbd42 () { salloc -p gpu-debug -A r00286 --nodes=2 --tasks-per-node=1 --gpus-per-node=4 --mem=0 --time=01:00:00; }
 
+# interactive job on lair
+intll4 ()  { salloc -p general -A cogneuroai --nodes=1 --tasks-per-node=10 --gres=gpu:L40S:4 --mem=64GB --time=0${1}:00:00; }
+intll8 ()  { salloc -p general -A cogneuroai --nodes=1 --tasks-per-node=10 --gres=gpu:L40S:8 --mem=0 --time=0${1}:00:00; }
+
 
 # view txt and err files from the sqlite database
 view_txt () { sqlite3 ~/job_results.db "select txt_content from job_results where job_id = '${1}';" > ${1}.txt; }
@@ -80,7 +84,7 @@ a jobs="squeue --me --sort=+i"
 
 
 if [ -d ~/.local ]; then
-    export PATH=$PATH:~/bin:/home/demistry/.local/bin:~/gh/bin
+    export PATH=$PATH:~/bin:~/.local/bin/:~/gh/bin
     export PATH=$PATH:"/Applications/Racket v8.14/bin"
 fi
 
@@ -88,7 +92,3 @@ if [ -d ~/.modular ]; then
     export MODULAR_HOME="~/.modular"
     export PATH="/Users/deven367/.modular/pkg/packages.modular.com_mojo/bin:$PATH"
 fi
-
-export OPENAI_API_KEY=$(cat ~/openai-key.txt)
-export ANTHROPIC_API_KEY=$(cat ~/anthropic-key.txt)
-export GEMINI_API_KEY=$(cat ~/geminipro-key.txt)
