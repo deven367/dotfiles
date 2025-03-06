@@ -4,9 +4,10 @@ fixes () { git commit -am "fixes #${1}" && git push; }
 pypi () { pip install "${1}"; }
 count () { find "${1}" -type f | rev | cut -d. -f1 | rev  | tr '[:upper:]' '[:lower:]' | sort | uniq --count | sort -rn; }
 # interactive job on quartz
-intq ()   { salloc --nodes=1 --ntasks-per-node=1 --time=0${1}:00:00 -p gpu -A r00286 --gpus-per-node=v100:1 --mem=64GB; }
-intqd ()  { salloc --nodes=1 --ntasks-per-node=1 --time=01:00:00 -p gpu-debug -A r00286 --gpus-per-node=v100:1 --mem=64GB; }
-intqd4 () { salloc --nodes=1 --ntasks-per-node=1 --time=01:00:00 -p gpu-debug -A r00286 --gpus-per-node=v100:4 --mem=0; }
+intq ()   { salloc --nodes=1 --ntasks-per-node=10 --time=0${1}:00:00 -p gpu -A r00286 --gpus-per-node=v100:1 --mem=64GB; }
+intqd ()  { salloc --nodes=1 --ntasks-per-node=10 --time=01:00:00 -p gpu-debug -A r00286 --gpus-per-node=v100:1 --mem=64GB; }
+intqd2 ()  { salloc --nodes=1 --ntasks-per-node=10 --time=01:00:00 -p gpu-debug -A r00286 --gpus-per-node=v100:2 --mem=64GB; }
+intqd4 () { salloc --nodes=1 --ntasks-per-node=10 --time=01:00:00 -p gpu-debug -A r00286 --gpus-per-node=v100:4 --mem=0; }
 
 # interactive job on bigred200
 intb ()    { salloc -p gpu -A r00286 --nodes=1 --tasks-per-node=1 --gpus-per-node=1 --mem=16GB --time=0${1}:00:00; }
@@ -14,6 +15,10 @@ intbc ()   { salloc -p general -A r00286 --nodes=1 --tasks-per-node=1 --mem=64GB
 intbd ()   { salloc -p gpu-debug -A r00286 --nodes=1 --tasks-per-node=1 --gpus-per-node=1 --mem=64G --time=01:00:00; }
 intbd4 ()  { salloc -p gpu-debug -A r00286 --nodes=1 --tasks-per-node=1 --gpus-per-node=4 --mem=0 --time=01:00:00; }
 intbd42 () { salloc -p gpu-debug -A r00286 --nodes=2 --tasks-per-node=1 --gpus-per-node=4 --mem=0 --time=01:00:00; }
+
+# interactive job on lair
+intll4 ()  { salloc -p general -A cogneuroai --nodes=1 --tasks-per-node=10 --gres=gpu:L40S:4 --mem=64GB --time=0${1}:00:00; }
+intll8 ()  { salloc -p general -A cogneuroai --nodes=1 --tasks-per-node=10 --gres=gpu:L40S:8 --mem=0 --time=0${1}:00:00; }
 
 
 # view txt and err files from the sqlite database
@@ -79,7 +84,7 @@ a jobs="squeue --me --sort=+i"
 
 
 if [ -d ~/.local ]; then
-    export PATH=$PATH:~/bin:/home/demistry/.local/bin:~/gh/bin
+    export PATH=$PATH:~/bin:~/.local/bin/:~/gh/bin
     export PATH=$PATH:"/Applications/Racket v8.14/bin"
 fi
 
@@ -87,7 +92,3 @@ if [ -d ~/.modular ]; then
     export MODULAR_HOME="~/.modular"
     export PATH="/Users/deven367/.modular/pkg/packages.modular.com_mojo/bin:$PATH"
 fi
-
-export OPENAI_API_KEY=$(cat ~/openai-key.txt)
-export ANTHROPIC_API_KEY=$(cat ~/anthropic-key.txt)
-export GEMINI_API_KEY=$(cat ~/geminipro-key.txt)
