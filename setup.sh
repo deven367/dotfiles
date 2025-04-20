@@ -41,8 +41,8 @@ if [ $ans = "y" ]; then
     # configure tmux
     echo "configuring tmux"
     # configure tmux
-    git clone https://github.com/gpakosz/.tmux.git
-    ln -s -f .tmux/.tmux.conf
+    git clone https://github.com/gpakosz/.tmux.git ~/.tmux
+    ln -s -f ~/.tmux/.tmux.conf
     echo "done"
 fi
 
