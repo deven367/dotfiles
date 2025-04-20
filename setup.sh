@@ -89,15 +89,5 @@ if [ $SHELL = "/bin/zsh" ]; then
         echo "installing oh-my-zsh"
         sh -c "$(curl -fsSL https://raw.github.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
         echo "done"
-
-
-        aliases="if [ -f ~/.bash_aliases ]; then
-            . ~/.bash_aliases
-        fi"
-
-        # write var to file
-        echo "$aliases" >> ~/.zshrc
-
-
     fi
 fi
