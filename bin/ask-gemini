@@ -1,4 +1,4 @@
-#!/Users/deven367/miniforge3/envs/torch/bin/python
+#!/usr/bin/env python3
 
 
 import os
@@ -15,9 +15,7 @@ def main():
     }
 
     params = {
-        "key": os.getenv(
-            "API_KEY", open("/home/demistry/geminipro-key.txt").read().strip()
-        ),
+        "key": os.getenv("GEMINI_API_KEY", os.getenv("API_KEY")),
     }
 
     json_data = {

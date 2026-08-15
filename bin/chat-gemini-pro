@@ -1,15 +1,15 @@
-#!/Users/deven367/miniforge3/envs/torch/bin/python
+#!/usr/bin/env python3
 
 
+import os
 import google.generativeai as genai
-from paths import PATH
 from rich.console import Console
 from rich.markdown import Markdown
 from rich.prompt import Prompt
 
 
 def main():
-    genai.configure(api_key=open(PATH / "geminipro-key.txt").read().strip())
+    genai.configure(api_key=os.environ["GEMINI_API_KEY"])
 
     model = genai.GenerativeModel("gemini-pro")
     chat = model.start_chat(history=[])
