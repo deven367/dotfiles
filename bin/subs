@@ -1,2 +1,2 @@
 #!/bin/bash
-~/projects/whisper.cpp/main -m ~/projects/whisper.cpp/models/ggml-base.bin -f "${1}" -osrt
+~/projects/public/whisper.cpp/build/bin/whisper-cli -m ~/projects/public/whisper.cpp/models/ggml-base.bin -f "${1}" -osrt

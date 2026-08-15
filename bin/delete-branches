@@ -1,0 +1,8 @@
+#!/bin/bash
+git fetch -p
+git branch | grep -v '\*' | while read branch; do
+  if ! git ls-remote --heads origin "$branch" | grep -q "$branch"; then
+    echo "Deleting: $branch"
+    git branch -d "$branch"
+  fi
+done

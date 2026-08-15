@@ -7,6 +7,10 @@ ffmpeg
 ffplay
 ffprobe
 ffserver
+# secrets
+.secrets
+*.key.txt
+# cluster binaries
 rclone
 rclone-v1.68.1-linux-amd64.zip
 rclone-v1.68.1-linux-amd64/

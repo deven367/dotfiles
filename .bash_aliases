@@ -17,6 +17,29 @@ intbd2 ()  { salloc -p gpu-debug -A r00117 --nodes=1 --tasks-per-node=10 --gpus-
 intbd4 ()  { salloc -p gpu-debug -A r00117 --nodes=1 --tasks-per-node=10 --gpus-per-node=4 --mem=0 --time=01:00:00; }
 intbd42 () { salloc -p gpu-debug -A r00117 --nodes=2 --tasks-per-node=10 --gpus-per-node=4 --mem=0 --time=01:00:00; }
 
+# interactive job on lair
+intll ()  { salloc -p general -A cogneuroai --nodes=1 --tasks-per-node=10 --gres=gpu:L40S:${1} --mem=64GB --time=0${2}:00:00; }
+intll4 ()  { salloc -p general -A cogneuroai --nodes=1 --tasks-per-node=10 --gres=gpu:L40S:4 --mem=64GB --time=0${1}:00:00; }
+intll8 ()  { salloc -p general -A cogneuroai --nodes=1 --tasks-per-node=10 --gres=gpu:L40S:8 --mem=0 --time=0${1}:00:00; }
+
+intlh2 ()  { salloc -p general -A cogneuroai --nodes=1 --tasks-per-node=10 --gres=gpu:H100:2 --mem=150GB --time=0${1}:00:00; }
+
+function download-playlist() {
+    if [[ -n "$1" ]]; then
+        touch ./files.txt;
+        counter=1;
+        while read line; do
+            if [[ "$line" == "http"* ]]; then
+                curl --silent -o ${counter}.mp4 "$line";
+                echo "file ${counter}.mp4" >> ./files.txt;
+                ((counter++));
+            fi;
+        done < "$1";
+        ffmpeg -f concat -safe 0 -i ./files.txt -codec copy output.mp4;
+    else
+        echo 'Usage: download-playlist <file.m3u8>';
+    fi
+}
 
 # view txt and err files from the sqlite database
 view_txt () { sqlite3 ~/job_results.db "select txt_content from job_results where job_id = '${1}';" > ${1}.txt; }
@@ -24,7 +47,7 @@ view_err () { sqlite3 ~/job_results.db "select err_content from job_results wher
 
 
 # download youtube mp3
-get_mp3 () { yt-dlp -x --audio-format mp3 -o '%(id)s.%(ext)s' "${1}"; }
+get-mp3 () { yt-dlp -x --audio-format mp3 -o '%(id)s.%(ext)s' "${1}"; }
 
 # handy for cleaning nbs
 nbclean () { nbdev_clean --fname "${1}"; }
@@ -72,8 +95,8 @@ a grv="git remote -v"
 a mpull="find . -name ".git" -type d | sed 's/\/.git//' |  xargs -P10 -I{} git -C {} pull"
 a sizes="du -sh * | sort -rh"
 
-a pending_gpu="squeue -p gpu -t PD --sort=+i"
-a running_gpu="squeue -p gpu -t R --sort=+i"
+a pending-gpu="squeue -p gpu -t PD --sort=+i"
+a running-gpu="squeue -p gpu -t R --sort=+i"
 
 a pending="squeue -t PD --sort=+i"
 a running="squeue -t R --sort=+i"
@@ -82,6 +105,7 @@ a pgd="pending -p gpu-debug"
 a rgd="running -p gpu-debug"
 
 a jobs="squeue --me --sort=+i"
+<<<<<<< HEAD
 
 
 if [ -d ~/.local ]; then
@@ -93,3 +117,5 @@ if [ -d ~/.modular ]; then
     export MODULAR_HOME="~/.modular"
     export PATH="/Users/deven367/.modular/pkg/packages.modular.com_mojo/bin:$PATH"
 fi
+=======
+>>>>>>> origin/main
