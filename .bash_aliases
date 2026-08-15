@@ -4,17 +4,18 @@ fixes () { git commit -am "fixes #${1}" && git push; }
 pypi () { pip install "${1}"; }
 count () { find "${1}" -type f | rev | cut -d. -f1 | rev  | tr '[:upper:]' '[:lower:]' | sort | uniq --count | sort -rn; }
 # interactive job on quartz
-intq ()   { salloc --nodes=1 --ntasks-per-node=10 --time=0${1}:00:00 -p gpu -A r00286 --gpus-per-node=v100:1 --mem=64GB; }
-intqd ()  { salloc --nodes=1 --ntasks-per-node=10 --time=01:00:00 -p gpu-debug -A r00286 --gpus-per-node=v100:1 --mem=64GB; }
-intqd2 ()  { salloc --nodes=1 --ntasks-per-node=10 --time=01:00:00 -p gpu-debug -A r00286 --gpus-per-node=v100:2 --mem=64GB; }
-intqd4 () { salloc --nodes=1 --ntasks-per-node=10 --time=01:00:00 -p gpu-debug -A r00286 --gpus-per-node=v100:4 --mem=0; }
+intq ()   { salloc --nodes=1 --ntasks-per-node=10 --time=0${1}:00:00 -p gpu -A r00117 --gpus-per-node=v100:1 --mem=64GB; }
+intqd ()  { salloc --nodes=1 --ntasks-per-node=10 --time=01:00:00 -p gpu-debug -A r00117 --gpus-per-node=v100:1 --mem=64GB; }
+intqd2 ()  { salloc --nodes=1 --ntasks-per-node=10 --time=01:00:00 -p gpu-debug -A r00117 --gpus-per-node=v100:2 --mem=64GB; }
+intqd4 () { salloc --nodes=1 --ntasks-per-node=10 --time=01:00:00 -p gpu-debug -A r00117 --gpus-per-node=v100:4 --mem=0; }
 
 # interactive job on bigred200
-intb ()    { salloc -p gpu -A r00286 --nodes=1 --tasks-per-node=1 --gpus-per-node=1 --mem=16GB --time=0${1}:00:00; }
-intbc ()   { salloc -p general -A r00286 --nodes=1 --tasks-per-node=1 --mem=64GB --time=0${1}:00:00; }
-intbd ()   { salloc -p gpu-debug -A r00286 --nodes=1 --tasks-per-node=1 --gpus-per-node=1 --mem=64G --time=01:00:00; }
-intbd4 ()  { salloc -p gpu-debug -A r00286 --nodes=1 --tasks-per-node=1 --gpus-per-node=4 --mem=0 --time=01:00:00; }
-intbd42 () { salloc -p gpu-debug -A r00286 --nodes=2 --tasks-per-node=1 --gpus-per-node=4 --mem=0 --time=01:00:00; }
+intb ()    { salloc -p gpu -A r00117 --nodes=1 --tasks-per-node=10 --gpus-per-node=1 --mem=16GB --time=0${1}:00:00; }
+intbc ()   { salloc -p general -A r00117 --nodes=1 --tasks-per-node=10 --mem=64GB --time=0${1}:00:00; }
+intbd ()   { salloc -p gpu-debug -A r00117 --nodes=1 --tasks-per-node=10 --gpus-per-node=1 --mem=64G --time=01:00:00; }
+intbd2 ()  { salloc -p gpu-debug -A r00117 --nodes=1 --tasks-per-node=10 --gpus-per-node=2 --mem=64G --time=01:00:00; }
+intbd4 ()  { salloc -p gpu-debug -A r00117 --nodes=1 --tasks-per-node=10 --gpus-per-node=4 --mem=0 --time=01:00:00; }
+intbd42 () { salloc -p gpu-debug -A r00117 --nodes=2 --tasks-per-node=10 --gpus-per-node=4 --mem=0 --time=01:00:00; }
 
 
 # view txt and err files from the sqlite database
@@ -36,6 +37,10 @@ cvt-whisper () { ffmpeg -i "${1}" -ar 16000 -ac 1 -c:a pcm_s16le "${1:0:-4}.wav"
 
 # pandoc
 word_to_md () { pandoc -t markdown_strict --extract-media="./attachments/${1}" "${1}" -o "${1:0:-5}.md"; }
+
+# slurm
+job () { scontrol show job $1; }
+job-st () { scontrol show job $1 | grep StartTime; }
 
 alias a=alias
 
