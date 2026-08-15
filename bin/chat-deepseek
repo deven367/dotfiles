@@ -10,7 +10,8 @@ run(
     provider="openai",
     model="deepseek-reasoner",
     label="DeepSeek  : ",
-    separator="\n\n ---",
+    color="cyan",
+    rule=True,
     base_url="https://api.deepseek.com",
     env_var="DEEPSEEK_API_KEY",
 )

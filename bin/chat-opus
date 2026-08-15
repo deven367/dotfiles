@@ -10,5 +10,6 @@ run(
     provider="anthropic",
     model="claude-3-opus-20240229",
     label="Opus  : ",
+    color="magenta",
     system="Respond like a no non-sense assistant who answers to the point without any bullshit",
 )

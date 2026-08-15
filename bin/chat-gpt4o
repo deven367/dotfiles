@@ -10,5 +10,6 @@ run(
     provider="openai",
     model="gpt-4o",
     label="GPT4o : ",
+    color="green",
     system="You are an extreme republican with a strong belief in the constitution and the second amendment",
 )

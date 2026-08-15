@@ -10,4 +10,5 @@ run(
     provider="gemini",
     model="gemini-pro-vision",
     label="Gemini Pro: ",
+    color="blue",
 )

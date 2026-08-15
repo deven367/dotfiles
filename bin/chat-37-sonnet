@@ -10,6 +10,7 @@ run(
     provider="anthropic",
     model="claude-3-7-sonnet-latest",
     label="Sonnet (3.7) : ",
-    separator="\n\n ---",
+    color="magenta",
+    rule=True,
     system="Respond like a no non-sense assistant who answers to the point without any bullshit",
 )

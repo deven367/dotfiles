@@ -95,13 +95,14 @@ def _session(provider, model, system, base_url, env_var=None):
     return factory(env_var or default_env, base_url)(model, system)
 
 
-def run(provider, model, label, separator="", system=None, base_url=None, env_var=None):
+def run(provider, model, label, color="cyan", rule=False, system=None, base_url=None, env_var=None):
     """Interactive REPL: prompt, send, render the reply as markdown."""
     console = Console()
     send = _session(provider, model, system, base_url, env_var)
+    console.print("[dim](type 'quit' or 'bye' to exit)[/dim]")
     while True:
         try:
-            user_input = Prompt.ask("You").strip()
+            user_input = Prompt.ask(f"[bold {color}]You[/bold {color}]").strip()
         except (EOFError, KeyboardInterrupt):
             console.print("Goodbye!")
             return
@@ -115,7 +116,10 @@ def run(provider, model, label, separator="", system=None, base_url=None, env_va
         except Exception as exc:
             console.print(f"[red]error: {exc}[/red]")
             continue
-        console.print(Markdown(f"{label}{reply}{separator}"))
+        console.print(f"[bold {color}]{label}[/bold {color}]")
+        console.print(Markdown(reply))
+        if rule:
+            console.rule(style="dim")
 
 
 def ask(provider, model, prompt, system=None, base_url=None, env_var=None):
