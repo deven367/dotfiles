@@ -9,6 +9,6 @@ from chatlib import run
 run(
     provider="gemini",
     model="gemini-pro-vision",
-    label="Gemini Pro: ",
+    label="Gemini Pro",
     color="blue",
 )

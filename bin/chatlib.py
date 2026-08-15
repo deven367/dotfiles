@@ -7,7 +7,7 @@ API keys come from the environment (~/.secrets via env.zsh), never from files.
 
 Usage (see the chat-* wrappers):
     from chatlib import run, ask
-    run(provider="openai", model="gpt-4o", label="GPT4o : ", system="...")
+    run(provider="openai", model="gpt-4o", label="GPT4o", system="...")
     ask(provider="gemini", model="gemini-pro", prompt="...")
 """
 
@@ -18,18 +18,19 @@ from rich.markdown import Markdown
 from rich.prompt import Prompt
 from rich.table import Table
 
-# Fixed-width speaker column: every label and the "You:" prompt start
-# content at the same terminal column.
-SPEAKER_WIDTH = 16
+# Fixed-width name field: every speaker name is right-aligned within it,
+# followed by a literal ": " cell, so all colons land at the same column
+# as the "You:" prompt.
+SPEAKER_WIDTH = 14
 
 
 def _assistant_row(label, reply, color):
-    """One transcript row: fixed-width speaker cell + markdown content."""
+    """One transcript row: name + ": " + markdown content, colons aligned."""
     table = Table(show_header=False, box=None, pad_edge=False, expand=False, padding=(0, 0))
-    # Right-aligned so every speaker's trailing ": " lands at the same column.
     table.add_column(no_wrap=True, width=SPEAKER_WIDTH, justify="right", style=f"bold {color}")
+    table.add_column(no_wrap=True, width=2, style=f"bold {color}")
     table.add_column()
-    table.add_row(label, Markdown(reply))
+    table.add_row(label, ": ", Markdown(reply))
     return table
 
 
@@ -117,10 +118,10 @@ def run(provider, model, label, color="cyan", rule=False, system=None, base_url=
     console.print("[dim](type 'quit' or 'bye' to exit)[/dim]")
     while True:
         try:
-            # rich's Prompt appends ": " itself, so pad to width-2 so typed
-            # input lands at the same column as the table content.
+            # rich's Prompt appends ": " itself; pad "You" to the same name
+            # width so its colon and typed input line up with the transcript.
             user_input = Prompt.ask(
-                f"[bold {color}]{'You':<{SPEAKER_WIDTH - 2}}[/bold {color}]"
+                f"[bold {color}]{'You':<{SPEAKER_WIDTH}}[/bold {color}]"
             ).strip()
         except (EOFError, KeyboardInterrupt):
             console.print("Goodbye!")
