@@ -18,7 +18,7 @@ from rich.markdown import Markdown
 from rich.prompt import Prompt
 from rich.table import Table
 
-# Fixed-width name field: every speaker name is right-aligned within it,
+# Fixed-width name field: every speaker name is left-aligned within it,
 # followed by a literal ": " cell, so all colons land at the same column
 # as the "You:" prompt.
 SPEAKER_WIDTH = 14
@@ -27,7 +27,7 @@ SPEAKER_WIDTH = 14
 def _assistant_row(label, reply, color):
     """One transcript row: name + ": " + markdown content, colons aligned."""
     table = Table(show_header=False, box=None, pad_edge=False, expand=False, padding=(0, 0))
-    table.add_column(no_wrap=True, width=SPEAKER_WIDTH, justify="right", style=f"bold {color}")
+    table.add_column(no_wrap=True, width=SPEAKER_WIDTH, justify="left", style=f"bold {color}")
     table.add_column(no_wrap=True, width=2, style=f"bold {color}")
     table.add_column()
     table.add_row(label, ": ", Markdown(reply))
