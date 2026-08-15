@@ -9,7 +9,7 @@ from rich.prompt import Prompt
 
 
 def main():
-    genai.configure(api_key=open(PATH / "geminipro-key.txt").read().strip())
+    genai.configure(api_key=os.environ["GEMINI_API_KEY"])
 
     model = genai.GenerativeModel("gemini-pro")
     chat = model.start_chat(history=[])

@@ -23,6 +23,22 @@ intll8 ()  { salloc -p general -A cogneuroai --nodes=1 --tasks-per-node=10 --gre
 
 intlh2 ()  { salloc -p general -A cogneuroai --nodes=1 --tasks-per-node=10 --gres=gpu:H100:2 --mem=150GB --time=0${1}:00:00; }
 
+function download-playlist() {
+    if [[ -n "$1" ]]; then
+        touch ./files.txt;
+        counter=1;
+        while read line; do
+            if [[ "$line" == "http"* ]]; then
+                curl --silent -o ${counter}.mp4 "$line";
+                echo "file ${counter}.mp4" >> ./files.txt;
+                ((counter++));
+            fi;
+        done < "$1";
+        ffmpeg -f concat -safe 0 -i ./files.txt -codec copy output.mp4;
+    else
+        echo 'Usage: download-playlist <file.m3u8>';
+    fi
+}
 
 # view txt and err files from the sqlite database
 view_txt () { sqlite3 ~/job_results.db "select txt_content from job_results where job_id = '${1}';" > ${1}.txt; }
@@ -74,8 +90,8 @@ a grv="git remote -v"
 a mpull="find . -name ".git" -type d | sed 's/\/.git//' |  xargs -P10 -I{} git -C {} pull"
 a sizes="du -sh * | sort -rh"
 
-a pending_gpu="squeue -p gpu -t PD --sort=+i"
-a running_gpu="squeue -p gpu -t R --sort=+i"
+a pending-gpu="squeue -p gpu -t PD --sort=+i"
+a running-gpu="squeue -p gpu -t R --sort=+i"
 
 a pending="squeue -t PD --sort=+i"
 a running="squeue -t R --sort=+i"
@@ -84,14 +100,3 @@ a pgd="pending -p gpu-debug"
 a rgd="running -p gpu-debug"
 
 a jobs="squeue --me --sort=+i"
-
-
-if [ -d ~/.local ]; then
-    export PATH=$PATH:~/bin:~/.local/bin/:~/gh/bin
-    export PATH=$PATH:"/Applications/Racket v8.14/bin"
-fi
-
-if [ -d ~/.modular ]; then
-    export MODULAR_HOME="~/.modular"
-    export PATH="/Users/deven367/.modular/pkg/packages.modular.com_mojo/bin:$PATH"
-fi

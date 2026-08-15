@@ -12,7 +12,7 @@ def find_pos(s, match):
 
 # Function to send a message to the OpenAI chatbot model and return its response
 def send_message(message_log):
-    api_key = open("/Users/deven367/anthropic-key.txt").read().strip()
+    api_key = os.environ["ANTHROPIC_API_KEY"]
     client = anthropic.Client(api_key=api_key)
 
     response = client.messages.create(

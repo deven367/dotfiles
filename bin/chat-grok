@@ -5,7 +5,7 @@ from rich.console import Console
 from rich.markdown import Markdown
 from rich.prompt import Prompt
 
-XAI_API_KEY = open("/Users/deven367/xai-key.txt").read().strip()
+XAI_API_KEY = os.environ["XAI_API_KEY"]
 
 
 def find_pos(s, match):
