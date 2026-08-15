@@ -105,17 +105,4 @@ a pgd="pending -p gpu-debug"
 a rgd="running -p gpu-debug"
 
 a jobs="squeue --me --sort=+i"
-<<<<<<< HEAD
 
-
-if [ -d ~/.local ]; then
-    export PATH=$PATH:~/bin:/home/demistry/.local/bin:~/gh/bin
-    export PATH=$PATH:"/Applications/Racket v8.14/bin"
-fi
-
-if [ -d ~/.modular ]; then
-    export MODULAR_HOME="~/.modular"
-    export PATH="/Users/deven367/.modular/pkg/packages.modular.com_mojo/bin:$PATH"
-fi
-=======
->>>>>>> origin/main
