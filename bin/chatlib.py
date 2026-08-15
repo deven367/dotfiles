@@ -16,6 +16,20 @@ import os
 from rich.console import Console
 from rich.markdown import Markdown
 from rich.prompt import Prompt
+from rich.table import Table
+
+# Fixed-width speaker column: every label and the "You:" prompt start
+# content at the same terminal column.
+SPEAKER_WIDTH = 16
+
+
+def _assistant_row(label, reply, color):
+    """One transcript row: fixed-width speaker cell + markdown content."""
+    table = Table(show_header=False, box=None, pad_edge=False, expand=False, padding=(0, 0))
+    table.add_column(no_wrap=True, width=SPEAKER_WIDTH, style=f"bold {color}")
+    table.add_column()
+    table.add_row(label, Markdown(reply))
+    return table
 
 
 def _openai_factory(env_var, base_url):
@@ -102,7 +116,11 @@ def run(provider, model, label, color="cyan", rule=False, system=None, base_url=
     console.print("[dim](type 'quit' or 'bye' to exit)[/dim]")
     while True:
         try:
-            user_input = Prompt.ask(f"[bold {color}]You[/bold {color}]").strip()
+            # rich's Prompt appends ": " itself, so pad to width-2 so typed
+            # input lands at the same column as the table content.
+            user_input = Prompt.ask(
+                f"[bold {color}]{'You':<{SPEAKER_WIDTH - 2}}[/bold {color}]"
+            ).strip()
         except (EOFError, KeyboardInterrupt):
             console.print("Goodbye!")
             return
@@ -116,8 +134,7 @@ def run(provider, model, label, color="cyan", rule=False, system=None, base_url=
         except Exception as exc:
             console.print(f"[red]error: {exc}[/red]")
             continue
-        console.print(f"[bold {color}]{label}[/bold {color}]")
-        console.print(Markdown(reply))
+        console.print(_assistant_row(label, reply, color))
         if rule:
             console.rule(style="dim")
 
