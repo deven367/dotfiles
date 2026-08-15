@@ -1,63 +1,13 @@
 #!/usr/bin/env python3
-
-
 import os
 import sys
 
-import requests
-from rich.console import Console
-from rich.markdown import Markdown
+sys.path.insert(0, os.path.dirname(os.path.realpath(__file__)))
 
+from chatlib import ask
 
-def main():
-    headers = {
-        "Content-Type": "application/json",
-    }
+if len(sys.argv) < 2:
+    print("usage: ask-gemini <prompt>", file=sys.stderr)
+    sys.exit(1)
 
-    params = {
-        "key": os.getenv("GEMINI_API_KEY", os.getenv("API_KEY")),
-    }
-
-    json_data = {
-        "contents": [
-            {
-                "role": "user",
-                "parts": [
-                    {
-                        "text": sys.argv[1],
-                    },
-                ],
-            },
-        ],
-    }
-
-    response = requests.post(
-        "https://generativelanguage.googleapis.com/v1/models/gemini-pro:generateContent",
-        params=params,
-        headers=headers,
-        json=json_data,
-    )
-    data = response.json()
-
-    console = Console()
-
-    # access keys using the get method
-    # md = Markdown(data['candidates'][0]['content']['parts'][0]['text'])
-    # data.get('candidates')[0].get('content').get('parts')[0].get('text')
-    md = Markdown(data.get("candidates")[0].get("content").get("parts")[0].get("text"))
-    console.print(md)
-    # console.print(data)
-
-    # Note: json_data will not be serialized by requests
-    # exactly as it was in the original request.
-    # data = '{"contents":[\n            {"role": "user",\n              "parts":[{"text": "Give me five subcategories of jazz?"}]}]}'
-    # response = requests.post(
-    #    'https://generativelanguage.googleapis.com/v1/models/gemini-pro:generateContent',
-    #    params=params,
-    #    headers=headers,
-    #    data=data,
-    # )
-
-
-if __name__ == "__main__":
-    main()
+ask(provider="gemini", model="gemini-pro", prompt=" ".join(sys.argv[1:]))

@@ -7,3 +7,6 @@ ffmpeg
 ffplay
 ffprobe
 ffserver
+# secrets
+.secrets
+*.key.txt
