@@ -1,4 +1,4 @@
-#!/Users/deven367/miniforge3/envs/torch/bin/python
+#!/usr/bin/env python3
 import os
 from openai import OpenAI
 from rich.console import Console
