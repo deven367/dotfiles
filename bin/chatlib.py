@@ -26,7 +26,8 @@ SPEAKER_WIDTH = 16
 def _assistant_row(label, reply, color):
     """One transcript row: fixed-width speaker cell + markdown content."""
     table = Table(show_header=False, box=None, pad_edge=False, expand=False, padding=(0, 0))
-    table.add_column(no_wrap=True, width=SPEAKER_WIDTH, style=f"bold {color}")
+    # Right-aligned so every speaker's trailing ": " lands at the same column.
+    table.add_column(no_wrap=True, width=SPEAKER_WIDTH, justify="right", style=f"bold {color}")
     table.add_column()
     table.add_row(label, Markdown(reply))
     return table
