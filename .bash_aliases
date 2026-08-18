@@ -100,3 +100,6 @@ a pgd="pending -p gpu-debug"
 a rgd="running -p gpu-debug"
 
 a jobs="squeue --me --sort=+i"
+
+# forward a local port through ssh (default host: lair)
+sshforward () { [ -n "$1" ] || { echo "Error: Please provide a port number." >&2; echo "Usage: sshforward <port> [host]" >&2; return 1; }; ssh -N -L "$1:localhost:$1" "${2:-lair}"; }
