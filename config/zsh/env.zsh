@@ -25,8 +25,10 @@ _path_append() {
 [ -f "$HOME/.secrets" ] && . "$HOME/.secrets"
 # --- rust toolchain ---
 [ -f "$HOME/.cargo/env" ] && . "$HOME/.cargo/env"
-# --- python: system interpreter via ~/.pybin shims ---
-_path_prepend "$HOME/.pybin"
+# --- python ---
+# No Homebrew here, so no ~/.pybin shims are needed (setup.sh still
+# creates them for mac parity; they are not prepended). Toolchain python
+# comes from `module load python` (~/.modules) or /usr/bin/python3.
 # --- environment modules (SLURM cluster toolchains) ---
 # Sourced for every shell so `module` works in scripts too. Module loads
 # prepend PATH, so e.g. `module load python` (from ~/.modules) shadows the
@@ -42,8 +44,13 @@ if [ -d /scratch/local/demistry ]; then
     export HF_HOME=/scratch/local/demistry/.cache/huggingface
     export UV_LINK_MODE=copy
 fi
-# --- llama.cpp runtime libs ---
-[ -d "$HOME/llama.cpp/build" ] && export LD_LIBRARY_PATH="$HOME/llama.cpp/build:$LD_LIBRARY_PATH"
+# --- llama.cpp runtime libs (idempotent; nested shells re-source env.zsh) ---
+if [ -d "$HOME/llama.cpp/build" ]; then
+  case ":$LD_LIBRARY_PATH:" in
+    *":$HOME/llama.cpp/build:"*) ;;
+    *) export LD_LIBRARY_PATH="$HOME/llama.cpp/build${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}" ;;
+  esac
+fi
 # --- user/app bins (appended; lowest priority) ---
 _path_append "$HOME/bin"
 _path_append "$HOME/.local/bin"
