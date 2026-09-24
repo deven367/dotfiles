@@ -1,3 +1,16 @@
 #!/bin/bash
 # yt-dlp -f '[ext=mp4]+bestaudio[ext=m4a]' "${1}"
-yt-dlp -f 'bestvideo[ext=mp4][height<=720]+bestaudio[ext=m4a]/best[ext=mp4][height<=720]/best[height<=720]' -o '%(title)s.%(ext)s' --merge-output-format mp4 "${1}"
+# stdout = the merged file path (yt-dlp progress goes to stderr), so it can feed a pipe:
+#   get-mp4 URL | cvt-whisper | otxt
+set -euo pipefail
+
+t=$(mktemp)
+trap 'rm -f "$t"' EXIT
+
+yt-dlp -f 'bestvideo[ext=mp4][height<=720]+bestaudio[ext=m4a]/best[ext=mp4][height<=720]/best[height<=720]' \
+    -o '%(title)s.%(ext)s' --merge-output-format mp4 \
+    --print-to-file after_move:filepath "$t" "${1}" >&2
+
+out=$(cat "$t")
+[ -n "$out" ] || exit 1
+printf '%s\n' "$out"
