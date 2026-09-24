@@ -9,3 +9,6 @@ fi
 
 # Re-apply after brew shellenv: ~/.pybin must precede /opt/homebrew/bin.
 export PATH="$HOME/.pybin:$PATH"
+
+# Added by Antigravity CLI installer
+export PATH="/Users/deven367/.local/bin:$PATH"

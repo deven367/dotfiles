@@ -1,2 +1,17 @@
 #!/bin/bash
-~/projects/public/whisper.cpp/build/bin/whisper-cli -m ~/projects/public/whisper.cpp/models/ggml-base.bin -f "${1}" -otxt
+# otxt: whisper-cli -otxt on <audio>. Path from $1 or stdin, transcript to stdout.
+#   get-mp3 URL | cvt-whisper | otxt
+# Still writes <audio>.txt next to the input, as before.
+# whisper-cli's stdout (timestamped segments) is dropped; the transcript is the cat below.
+set -euo pipefail
+
+f="${1-}"
+if [ -z "$f" ]; then IFS= read -r f || :; fi
+f="${f%$'\r'}"                                  # tolerate CR from a piped producer
+[ -n "$f" ] || { echo "usage: otxt <audio>  (or pipe a path in)" >&2; exit 2; }
+
+~/projects/public/whisper.cpp/build/bin/whisper-cli \
+    -m ~/projects/public/whisper.cpp/models/ggml-base.bin \
+    -f "$f" -otxt >/dev/null
+
+cat "$f.txt"

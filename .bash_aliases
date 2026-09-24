@@ -46,8 +46,18 @@ view_txt () { sqlite3 ~/job_results.db "select txt_content from job_results wher
 view_err () { sqlite3 ~/job_results.db "select err_content from job_results where job_id = '${1}';" > ${1}.err; }
 
 
-# download youtube mp3
-get-mp3 () { yt-dlp -x --audio-format mp3 -o '%(id)s.%(ext)s' "${1}"; }
+# download youtube mp3; prints the downloaded path on stdout so it can feed a pipe
+#   get-mp3 URL | cvt-whisper | otxt
+# (yt-dlp progress goes to stderr: its --print/--progress both write to stdout, which would
+#  corrupt the pipe, so the path is captured via --print-to-file instead)
+get-mp3 () {
+  local url="$1" t out
+  t=$(mktemp)
+  yt-dlp -x --audio-format mp3 -o '%(id)s.%(ext)s' --print-to-file after_move:filepath "$t" "$url" >&2
+  out=$(cat "$t"); rm -f "$t"
+  [ -n "$out" ] || return 1
+  printf '%s\n' "$out"
+}
 
 # handy for cleaning nbs
 nbclean () { nbdev_clean --fname "${1}"; }
@@ -56,7 +66,17 @@ nbclean () { nbdev_clean --fname "${1}"; }
 loop1 () { watch -n 1 "${1}"; }
 loop () { watch -n ${1} "${2}"; }
 
-cvt-whisper () { ffmpeg -i "${1}" -ar 16000 -ac 1 -c:a pcm_s16le "${1:0:-4}.wav";}
+# media -> 16 kHz mono WAV for whisper. Path from $1 or stdin; prints the WAV path
+cvt-whisper () {
+  local in="$1"
+  [ -n "$in" ] || IFS= read -r in
+  in="${in%$'\r'}"                              # tolerate CR from a piped producer
+  [ -n "$in" ] || { echo "usage: cvt-whisper <media>  (or pipe a path in)" >&2; return 2; }
+  local out="${in%.*}.wav"
+  [ "$out" = "$in" ] && out="${in}.16k.wav"   # input is already .wav: don't clobber it
+  ffmpeg -nostdin -y -loglevel error -i "$in" -vn -ar 16000 -ac 1 -c:a pcm_s16le "$out" || return 1
+  printf '%s\n' "$out"
+}
 
 # pandoc
 word_to_md () { pandoc -t markdown_strict --extract-media="./attachments/${1}" "${1}" -o "${1:0:-5}.md"; }
@@ -106,3 +126,54 @@ a rgd="running -p gpu-debug"
 
 a jobs="squeue --me --sort=+i"
 
+# forward a local port through ssh (default host: lair)
+sshforward () { [ -n "$1" ] || { echo "Error: Please provide a port number." >&2; echo "Usage: sshforward <port> [host]" >&2; return 1; }; ssh -N -L "${1}:localhost:${1}" "${2:-lair}"; }
+
+# Remote-SSH into an internal compute node.
+# User/key/ProxyJump come from the wildcard blocks in ~/.ssh/config (Host lair-*, g*, x*);
+# Remote-SSH just runs `ssh <node>`, so nothing per-node to hand-edit.
+#   vsnode lair              -> resolves your running job via squeue (e.g. lair-g6)
+#   vsnode lair-g6 ~/proj    -> explicit node + remote folder (default /tmp)
+vsnode () {
+  [ -n "$1" ] || { echo "usage: vsnode <cluster|node> [remote-path]" >&2; return 1; }
+  local target=$1 node; shift
+  case $target in
+    lair|quartz|bigred200)
+      # ponytail: first node only; iterate %N if you ever need a multi-node job
+      node=$(ssh -o BatchMode=yes "$target" 'squeue -h -u $USER -t RUNNING -o %N' | tr ',' '\n' | head -1) ;;
+    *) node=$target ;;
+  esac
+  [ -n "$node" ] || { echo "vsnode: no running job on $target" >&2; return 1; }
+  code --remote "ssh-remote+$node" "${1:-/tmp}"
+}
+
+# llama.cpp server tunnel: localhost:9932 <-> <host>:9932 (background, pidfile-managed)
+#   llamatunnel [host]   start (default host: node-lair; no-op if already up)
+#   llamatunnel stop     stop (pidfile first, lsof fallback)
+llamatunnel () {
+  local host="${1:-node-lair}"
+  if [ "${1:-}" = "stop" ]; then
+    if [ -f /tmp/llamatunnel.pid ] && kill -0 "$(cat /tmp/llamatunnel.pid)" 2>/dev/null; then
+      kill "$(cat /tmp/llamatunnel.pid)" && echo "tunnel stopped (pid $(cat /tmp/llamatunnel.pid))"
+    elif lsof -tiTCP:9932 -sTCP:LISTEN >/dev/null 2>&1; then
+      lsof -tiTCP:9932 -sTCP:LISTEN 2>/dev/null | while read p; do kill "$p"; done
+      echo "tunnel stopped (lsof fallback)"
+    else
+      echo "no tunnel running"
+    fi
+    rm -f /tmp/llamatunnel.pid
+    return 0
+  fi
+  if lsof -tiTCP:9932 -sTCP:LISTEN >/dev/null 2>&1; then
+    echo "tunnel already up on localhost:9932"
+    return 1
+  fi
+  nohup ssh -N -o ExitOnForwardFailure=yes -L 9932:127.0.0.1:9932 "$host" >/tmp/llamatunnel.log 2>&1 &
+  echo $! > /tmp/llamatunnel.pid
+  sleep 1
+  if lsof -tiTCP:9932 -sTCP:LISTEN >/dev/null 2>&1; then
+    echo "tunnel up to $host (pid $(cat /tmp/llamatunnel.pid))"
+  else
+    echo "tunnel failed - log:"; cat /tmp/llamatunnel.log; rm -f /tmp/llamatunnel.pid
+  fi
+}
