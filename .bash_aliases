@@ -123,3 +123,52 @@ a jobs="squeue --me --sort=+i"
 
 # forward a local port through ssh (default host: lair)
 sshforward () { [ -n "$1" ] || { echo "Error: Please provide a port number." >&2; echo "Usage: sshforward <port> [host]" >&2; return 1; }; ssh -N -L "${1}:localhost:${1}" "${2:-lair}"; }
+
+# Remote-SSH into an internal compute node.
+# User/key/ProxyJump come from the wildcard blocks in ~/.ssh/config (Host lair-*, g*, x*);
+# Remote-SSH just runs `ssh <node>`, so nothing per-node to hand-edit.
+#   vsnode lair              -> resolves your running job via squeue (e.g. lair-g6)
+#   vsnode lair-g6 ~/proj    -> explicit node + remote folder (default /tmp)
+vsnode () {
+  [ -n "$1" ] || { echo "usage: vsnode <cluster|node> [remote-path]" >&2; return 1; }
+  local target=$1 node; shift
+  case $target in
+    lair|quartz|bigred200)
+      # ponytail: first node only; iterate %N if you ever need a multi-node job
+      node=$(ssh -o BatchMode=yes "$target" 'squeue -h -u $USER -t RUNNING -o %N' | tr ',' '\n' | head -1) ;;
+    *) node=$target ;;
+  esac
+  [ -n "$node" ] || { echo "vsnode: no running job on $target" >&2; return 1; }
+  code --remote "ssh-remote+$node" "${1:-/tmp}"
+}
+
+# llama.cpp server tunnel: localhost:9932 <-> <host>:9932 (background, pidfile-managed)
+#   llamatunnel [host]   start (default host: node-lair; no-op if already up)
+#   llamatunnel stop     stop (pidfile first, lsof fallback)
+llamatunnel () {
+  local host="${1:-node-lair}"
+  if [ "${1:-}" = "stop" ]; then
+    if [ -f /tmp/llamatunnel.pid ] && kill -0 "$(cat /tmp/llamatunnel.pid)" 2>/dev/null; then
+      kill "$(cat /tmp/llamatunnel.pid)" && echo "tunnel stopped (pid $(cat /tmp/llamatunnel.pid))"
+    elif lsof -tiTCP:9932 -sTCP:LISTEN >/dev/null 2>&1; then
+      lsof -tiTCP:9932 -sTCP:LISTEN 2>/dev/null | while read p; do kill "$p"; done
+      echo "tunnel stopped (lsof fallback)"
+    else
+      echo "no tunnel running"
+    fi
+    rm -f /tmp/llamatunnel.pid
+    return 0
+  fi
+  if lsof -tiTCP:9932 -sTCP:LISTEN >/dev/null 2>&1; then
+    echo "tunnel already up on localhost:9932"
+    return 1
+  fi
+  nohup ssh -N -o ExitOnForwardFailure=yes -L 9932:127.0.0.1:9932 "$host" >/tmp/llamatunnel.log 2>&1 &
+  echo $! > /tmp/llamatunnel.pid
+  sleep 1
+  if lsof -tiTCP:9932 -sTCP:LISTEN >/dev/null 2>&1; then
+    echo "tunnel up to $host (pid $(cat /tmp/llamatunnel.pid))"
+  else
+    echo "tunnel failed - log:"; cat /tmp/llamatunnel.log; rm -f /tmp/llamatunnel.pid
+  fi
+}
