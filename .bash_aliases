@@ -10,11 +10,11 @@ intqd2 ()  { salloc --nodes=1 --ntasks-per-node=10 --time=01:00:00 -p h100-debug
 intqd4 () { salloc --nodes=1 --ntasks-per-node=10 --time=01:00:00 -p h100-debug -A r00117 --mem=0 --gpus-per-node h100:4; }
 
 # interactive job on bigred200
-intb ()    { salloc -p gpu -A r00286 --nodes=1 --tasks-per-node=1 --gpus-per-node=1 --mem=16GB --time=0${1}:00:00; }
-intbc ()   { salloc -p general -A r00286 --nodes=1 --tasks-per-node=1 --mem=64GB --time=0${1}:00:00; }
-intbd ()   { salloc -p gpu-debug -A r00286 --nodes=1 --tasks-per-node=1 --gpus-per-node=1 --mem=64G --time=01:00:00; }
-intbd4 ()  { salloc -p gpu-debug -A r00286 --nodes=1 --tasks-per-node=1 --gpus-per-node=4 --mem=0 --time=01:00:00; }
-intbd42 () { salloc -p gpu-debug -A r00286 --nodes=2 --tasks-per-node=1 --gpus-per-node=4 --mem=0 --time=01:00:00; }
+intb ()    { salloc -p gpu -A r00117 --nodes=1 --tasks-per-node=1 --gpus-per-node=1 --mem=16GB --time=0${1}:00:00; }
+intbc ()   { salloc -p general -A r00117 --nodes=1 --tasks-per-node=1 --mem=64GB --time=0${1}:00:00; }
+intbd ()   { salloc -p gpu-debug -A r00117 --nodes=1 --tasks-per-node=1 --gpus-per-node=1 --mem=64G --time=01:00:00; }
+intbd4 ()  { salloc -p gpu-debug -A r00117 --nodes=1 --tasks-per-node=1 --gpus-per-node=4 --mem=0 --time=01:00:00; }
+intbd42 () { salloc -p gpu-debug -A r00117 --nodes=2 --tasks-per-node=1 --gpus-per-node=4 --mem=0 --time=01:00:00; }
 
 # interactive job on lair
 intll ()  { salloc -p general -A cogneuroai --nodes=1 --tasks-per-node=10 --gres=gpu:L40S:${1} --mem=64GB --time=0${2}:00:00; }
