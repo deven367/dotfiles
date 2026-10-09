@@ -4,10 +4,26 @@ fixes () { git commit -am "fixes #${1}" && git push; }
 pypi () { pip install "${1}"; }
 count () { find "${1}" -type f | rev | cut -d. -f1 | rev  | tr '[:upper:]' '[:lower:]' | sort | uniq --count | sort -rn; }
 # interactive job on quartz
-intq ()   { salloc --nodes=1 --ntasks-per-node=10 --time=0${1}:00:00 -p h100-single -A r00117 --mem=64GB --gpus-per-node h100:1; }
-intqd ()  { salloc --nodes=1 --ntasks-per-node=10 --time=01:00:00 -p h100-debug -A r00117 --mem=64GB --gpus-per-node h100:1; }
-intqd2 ()  { salloc --nodes=1 --ntasks-per-node=10 --time=01:00:00 -p h100-debug -A r00117 --mem=64GB --gpus-per-node h100:2; }
-intqd4 () { salloc --nodes=1 --ntasks-per-node=10 --time=01:00:00 -p h100-debug -A r00117 --mem=0 --gpus-per-node h100:4; }
+# intq general 3; intq h100-single 1 3; intq h100-debug 2 1
+intq () {
+  local partition="${1:-}" hours="${2:-}" gpus=1 expected=2
+  local -a gpu_args=()
+  case "$partition" in
+    h100-single|h100-debug)
+      gpus="${2:-}"
+      hours="${3:-}"
+      expected=3
+      gpu_args=("--gpus-per-node=h100:$gpus")
+      ;;
+  esac
+  if [[ $# -ne $expected || -z "$partition" ||
+        ! "$hours" =~ ^[1-9][0-9]*$ || ! "$gpus" =~ ^[1-9][0-9]*$ ]]; then
+    echo "Usage: intq <partition> <hours> | intq <h100-single|h100-debug> <gpus> <hours>" >&2
+    return 2
+  fi
+  salloc --nodes=1 --ntasks-per-node=10 --time="${hours}:00:00" \
+    -p "$partition" -A r00117 --mem=64GB "${gpu_args[@]}"
+}
 
 # interactive job on bigred200
 intb ()    { salloc -p gpu -A r00117 --nodes=1 --tasks-per-node=1 --gpus-per-node=1 --mem=16GB --time=0${1}:00:00; }
