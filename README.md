@@ -35,6 +35,26 @@ bash dotfiles/setup.sh
 
 Then: `vim ~/.secrets` (fill in keys, `chmod 600`), open a new shell.
 
+## Quartz interactive jobs
+
+Run on Quartz after sourcing `~/.bash_aliases`:
+
+```sh
+intq general 3          # CPU session for 3 hours
+intq h100-single 1 3    # 1 H100 GPU for 3 hours
+intq h100-debug 2 1     # 2 H100 GPUs for 1 hour
+```
+
+`intq <partition> <hours>` requests no GPUs. For `h100-single` and
+`h100-debug`, use `intq <partition> <gpus> <hours>`. Hours and GPU counts
+must be positive integers. Every request uses account `r00117`, one node,
+10 tasks per node, and 64 GB RAM. `h100-debug` has a one-hour time limit;
+Slurm enforces partition limits and resource availability.
+
+This replaces `intqd`, `intqd2`, and `intqd4`; use `intq h100-debug <gpus> 1`.
+Check invalid-input handling with `bash tests/test_intq.sh` or
+`zsh tests/test_intq.sh`.
+
 ## Secrets policy
 
 - Real API keys go in `~/.secrets` only — this repo is **public**.

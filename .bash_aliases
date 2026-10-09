@@ -4,17 +4,33 @@ fixes () { git commit -am "fixes #${1}" && git push; }
 pypi () { pip install "${1}"; }
 count () { find "${1}" -type f | rev | cut -d. -f1 | rev  | tr '[:upper:]' '[:lower:]' | sort | uniq --count | sort -rn; }
 # interactive job on quartz
-intq ()   { salloc --nodes=1 --ntasks-per-node=10 --time=0${1}:00:00 -p gpu -A r00286 --gpus-per-node=v100:1 --mem=64GB; }
-intqd ()  { salloc --nodes=1 --ntasks-per-node=10 --time=01:00:00 -p gpu-debug -A r00286 --gpus-per-node=v100:1 --mem=64GB; }
-intqd2 ()  { salloc --nodes=1 --ntasks-per-node=10 --time=01:00:00 -p gpu-debug -A r00286 --gpus-per-node=v100:2 --mem=64GB; }
-intqd4 () { salloc --nodes=1 --ntasks-per-node=10 --time=01:00:00 -p gpu-debug -A r00286 --gpus-per-node=v100:4 --mem=0; }
+# intq general 3; intq h100-single 1 3; intq h100-debug 2 1
+intq () {
+  local partition="${1:-}" hours="${2:-}" gpus=1 expected=2
+  local -a gpu_args=()
+  case "$partition" in
+    h100-single|h100-debug)
+      gpus="${2:-}"
+      hours="${3:-}"
+      expected=3
+      gpu_args=("--gpus-per-node=h100:$gpus")
+      ;;
+  esac
+  if [[ $# -ne $expected || -z "$partition" ||
+        ! "$hours" =~ ^[1-9][0-9]*$ || ! "$gpus" =~ ^[1-9][0-9]*$ ]]; then
+    echo "Usage: intq <partition> <hours> | intq <h100-single|h100-debug> <gpus> <hours>" >&2
+    return 2
+  fi
+  salloc --nodes=1 --ntasks-per-node=10 --time="${hours}:00:00" \
+    -p "$partition" -A r00117 --mem=64GB "${gpu_args[@]}"
+}
 
 # interactive job on bigred200
-intb ()    { salloc -p gpu -A r00286 --nodes=1 --tasks-per-node=1 --gpus-per-node=1 --mem=16GB --time=0${1}:00:00; }
-intbc ()   { salloc -p general -A r00286 --nodes=1 --tasks-per-node=1 --mem=64GB --time=0${1}:00:00; }
-intbd ()   { salloc -p gpu-debug -A r00286 --nodes=1 --tasks-per-node=1 --gpus-per-node=1 --mem=64G --time=01:00:00; }
-intbd4 ()  { salloc -p gpu-debug -A r00286 --nodes=1 --tasks-per-node=1 --gpus-per-node=4 --mem=0 --time=01:00:00; }
-intbd42 () { salloc -p gpu-debug -A r00286 --nodes=2 --tasks-per-node=1 --gpus-per-node=4 --mem=0 --time=01:00:00; }
+intb ()    { salloc -p gpu -A r00117 --nodes=1 --tasks-per-node=1 --gpus-per-node=1 --mem=16GB --time=0${1}:00:00; }
+intbc ()   { salloc -p general -A r00117 --nodes=1 --tasks-per-node=1 --mem=64GB --time=0${1}:00:00; }
+intbd ()   { salloc -p gpu-debug -A r00117 --nodes=1 --tasks-per-node=1 --gpus-per-node=1 --mem=64G --time=01:00:00; }
+intbd4 ()  { salloc -p gpu-debug -A r00117 --nodes=1 --tasks-per-node=1 --gpus-per-node=4 --mem=0 --time=01:00:00; }
+intbd42 () { salloc -p gpu-debug -A r00117 --nodes=2 --tasks-per-node=1 --gpus-per-node=4 --mem=0 --time=01:00:00; }
 
 # interactive job on lair
 intll ()  { salloc -p general -A cogneuroai --nodes=1 --tasks-per-node=10 --gres=gpu:L40S:${1} --mem=64GB --time=0${2}:00:00; }
