@@ -18,7 +18,7 @@ intq () {
   esac
   if [[ $# -ne $expected || -z "$partition" ||
         ! "$hours" =~ ^[1-9][0-9]*$ || ! "$gpus" =~ ^[1-9][0-9]*$ ]]; then
-    echo "Usage: intq <partition> <hours> | intq <h100-single|h100-debug> <gpus> <hours>" >&2
+    echo "Usage: intq <partition> <hours> | intq <h100-single|h100-debug|h100-interactive> <gpus> <hours>" >&2
     return 2
   fi
   salloc --nodes=1 --ntasks-per-node=10 --time="${hours}:00:00" \
