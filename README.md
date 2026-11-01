@@ -20,7 +20,22 @@ files follow.
 
 The Python default is the system interpreter: `~/.pybin` shims shadow
 Homebrew's `python3`/`pip3`. Keys live in `~/.secrets` (600), sourced by
-`env.zsh` for every shell.
+`env.zsh` for zsh and for non-interactive Bash when `BASH_ENV` points to
+`~/.env.sh`. Interactive Bash loads secrets directly from `~/.bashrc`.
+
+## Bash secrets
+
+`setup.sh` appends a readable-file, interactive-only secrets loader to
+`~/.bashrc` without replacing existing configuration or duplicating the
+loader on reruns. Interactive Bash ignores `BASH_ENV`; loading secrets
+directly avoids importing the shared environment's macOS-specific settings.
+
+Use explicit `export` assignments in `~/.secrets` so child processes inherit
+the keys. A missing secrets file is harmless.
+
+For an existing installation, rerun `bash ~/dotfiles/setup.sh`, then open a
+new Bash shell or run `source ~/.bashrc` in the current one. Check secrets
+loading and setup idempotence with `bash tests/test_bash_secrets.sh`.
 
 ## First-time setup
 

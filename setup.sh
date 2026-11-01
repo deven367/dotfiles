@@ -14,6 +14,10 @@ link "$HOME/dotfiles/.zprofile" "$HOME/.zprofile"
 link "$HOME/dotfiles/.env.sh" "$HOME/.env.sh"
 link "$HOME/dotfiles/config/zsh/env.zsh" "$HOME/.config/zsh/env.zsh"
 
+bash_secrets='if [[ $- == *i* && -r "$HOME/.secrets" ]]; then source "$HOME/.secrets"; fi'
+grep -Fqx "$bash_secrets" "$HOME/.bashrc" 2>/dev/null ||
+    printf '\n%s\n' "$bash_secrets" >> "$HOME/.bashrc"
+
 say "Secrets"
 if [ -f "$HOME/.secrets" ]; then
     echo "  ~/.secrets exists (leave as is)"
