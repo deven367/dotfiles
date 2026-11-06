@@ -50,6 +50,31 @@ bash dotfiles/setup.sh
 
 Then: `vim ~/.secrets` (fill in keys, `chmod 600`), open a new shell.
 
+## Focus sessions (macOS)
+
+```sh
+focus.sh on       # block distracting sites and start a session
+focus.sh status   # show blocking status and elapsed seconds
+focus.sh off      # unblock sites and save the completed session
+```
+
+Run without `sudo`; the script elevates only hosts-file and DNS operations.
+History stays in your account at `~/.local/state/focus/sessions.csv`, or
+`$XDG_STATE_HOME/focus/sessions.csv` when `XDG_STATE_HOME` is set:
+
+```csv
+started_at,ended_at,duration_seconds
+2024-01-01T23:50:00Z,2024-01-02T00:15:00Z,1500
+```
+
+Timestamps are UTC; durations are wall-clock seconds, including sleep or
+reboots while focus remains enabled. The active start persists on disk;
+repeated `on` calls fail without resetting it. Blocks enabled before tracking
+was installed can still be turned off, but have no session to save.
+
+Sessions spanning midnight stay intact. Split intervals at local midnight
+when calculating daily totals. Check tracking with `bash tests/test_focus.sh`.
+
 ## Quartz interactive jobs
 
 Run on Quartz after sourcing `~/.bash_aliases`:
