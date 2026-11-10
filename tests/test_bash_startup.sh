@@ -19,6 +19,12 @@ for run in 1 2; do
     [[ $DOTFILES_STARTUP_CHECK == preserved ]]
     alias gs >/dev/null
     declare -F gadd >/dev/null
+
+    # Prompt hooks need the builtin jobs, not a Slurm command.
+    sleep 30 &
+    pid=$!
+    trap "kill $pid 2>/dev/null; wait $pid 2>/dev/null || :" EXIT
+    [[ $(jobs -p) == "$pid" ]]
   '
   # Old installer hooks in login profiles must not undo the Bash PATH setup.
   for profile in .bash_profile .profile; do
