@@ -11,6 +11,7 @@ changing its scope. Do not treat a task request alone as plan approval.
 | Branch | Environment | Shell |
 | --- | --- | --- |
 | `main` | User's Mac | zsh |
+| `omarchy` | Omarchy Linux workstation | bash |
 | `quartz` | Quartz Slurm cluster | bash |
 | `bigred200` | Big Red 200 Slurm cluster | bash |
 | `lair` | Lair Slurm cluster | zsh |

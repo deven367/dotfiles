@@ -1,0 +1,2 @@
+# User hooks run after packaged Omarchy setup, including mise activation.
+. "$HOME/.config/shell/path.sh"

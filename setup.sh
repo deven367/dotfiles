@@ -1,6 +1,6 @@
 #!/bin/bash
-# Bootstrap for deven367/dotfiles. Interactive; safe to re-run (idempotent).
-# macOS-oriented: expects Homebrew, git, and a zsh or bash shell.
+# Bootstrap for deven367/dotfiles on Omarchy. Interactive and safe to re-run.
+# Keep packaged Omarchy defaults; install only user-level configuration.
 
 say()  { printf '\n== %s ==\n' "$*"; }
 ask()  { local a; printf '%s [y/N]: ' "$1"; read -r a; [[ $a == [yY]* ]]; }
@@ -13,10 +13,52 @@ link "$HOME/dotfiles/.zshenv" "$HOME/.zshenv"
 link "$HOME/dotfiles/.zprofile" "$HOME/.zprofile"
 link "$HOME/dotfiles/.env.sh" "$HOME/.env.sh"
 link "$HOME/dotfiles/config/zsh/env.zsh" "$HOME/.config/zsh/env.zsh"
+link "$HOME/dotfiles/config/shell/path.sh" "$HOME/.config/shell/path.sh"
+link "$HOME/dotfiles/config/uwsm/env.d/99-dotfiles-path" "$HOME/.config/uwsm/env.d/99-dotfiles-path"
+
+# Replace uv's generated PATH hooks, not its binaries or installer files.
+uv_env='. "$HOME/.local/bin/env"'
+uv_env_legacy='. "$HOME/.local/share/../bin/env"'
+for startup in "$HOME/.bashrc" "$HOME/.bash_profile" "$HOME/.profile"; do
+    if grep -Fqx -e "$uv_env" -e "$uv_env_legacy" "$startup" 2>/dev/null; then
+        startup_tmp=$(mktemp)
+        grep -Fvx -e "$uv_env" -e "$uv_env_legacy" "$startup" > "$startup_tmp" || :
+        cat "$startup_tmp" > "$startup"
+        rm -f "$startup_tmp"
+    fi
+done
+
+# Run before an existing interactive-only return, then again after mise's
+# interactive activation so local launchers retain precedence.
+bash_path='[[ -r "$HOME/.config/shell/path.sh" ]] && source "$HOME/.config/shell/path.sh"'
+bash_path_early="$bash_path # dotfiles: before interactive guard"
+if ! grep -Fqx "$bash_path_early" "$HOME/.bashrc" 2>/dev/null; then
+    bashrc_tmp=$(mktemp)
+    printf '%s\n' "$bash_path_early" > "$bashrc_tmp"
+    [[ ! -f "$HOME/.bashrc" ]] || cat "$HOME/.bashrc" >> "$bashrc_tmp"
+    cat "$bashrc_tmp" > "$HOME/.bashrc"
+    rm -f "$bashrc_tmp"
+fi
 
 bash_secrets='if [[ $- == *i* && -r "$HOME/.secrets" ]]; then source "$HOME/.secrets"; fi'
 grep -Fqx "$bash_secrets" "$HOME/.bashrc" 2>/dev/null ||
     printf '\n%s\n' "$bash_secrets" >> "$HOME/.bashrc"
+
+bash_aliases='[[ $- == *i* && -f ~/.bash_aliases ]] && source ~/.bash_aliases'
+grep -Fqx "$bash_aliases" "$HOME/.bashrc" 2>/dev/null ||
+    printf '\n%s\n' "$bash_aliases" >> "$HOME/.bashrc"
+
+bash_path_late="$bash_path # dotfiles: after tool initialization"
+grep -Fqx "$bash_path_late" "$HOME/.bashrc" 2>/dev/null ||
+    printf '\n%s\n' "$bash_path_late" >> "$HOME/.bashrc"
+
+# Do not create .bash_profile: that would hide an existing .profile.
+profile_path='[ ! -r "$HOME/.config/shell/path.sh" ] || . "$HOME/.config/shell/path.sh"'
+for startup in "$HOME/.profile" "$HOME/.bash_profile"; do
+    [[ "$startup" == "$HOME/.profile" || -f "$startup" ]] || continue
+    grep -Fqx "$profile_path" "$startup" 2>/dev/null ||
+        printf '\n%s\n' "$profile_path" >> "$startup"
+done
 
 say "Secrets"
 if [ -f "$HOME/.secrets" ]; then
@@ -26,14 +68,6 @@ else
     echo "  created ~/.secrets from template — FILL IN THE KEYS, then chmod 600"
 fi
 
-say "Python default (system interpreter via ~/.pybin shims)"
-mkdir -p "$HOME/.pybin"
-ln -sfn /usr/bin/python3 "$HOME/.pybin/python3"
-ln -sfn /usr/bin/pip3 "$HOME/.pybin/pip3"
-printf '#!/bin/sh\nexec -a python3 /usr/bin/python3 "$@"\n' > "$HOME/.pybin/python"
-printf '#!/bin/sh\nexec -a pip3 /usr/bin/pip3 "$@"\n' > "$HOME/.pybin/pip"
-chmod +x "$HOME/.pybin/python" "$HOME/.pybin/pip"
-echo "  ~/.pybin: python/python3 -> /usr/bin/python3, pip/pip3 -> /usr/bin/pip3"
 
 if ask "setup miniforge (conda)?"; then
     say "Miniforge"

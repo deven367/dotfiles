@@ -1,9 +1,9 @@
 # dotfiles
 
-Personal setup for macOS (zsh + bash). Shell config, CLI scripts, and a
-bootstrap script. Everything in `~` is a symlink into this repo, so this
-repo is the single source of truth — edit here, commit, and the live
-files follow.
+Personal setup for Omarchy Linux (Bash, with optional zsh). This branch is
+`omarchy`; `main` retains the Mac configuration. Managed shell files in `~`
+are symlinks into this repo. `~/.bashrc` stays local; setup adds PATH,
+secrets, and alias loaders without replacing its existing configuration.
 
 ## Layout
 
@@ -11,24 +11,45 @@ files follow.
 |---|---|
 | `setup.sh` | interactive, idempotent bootstrap |
 | `.zshenv` | env for every zsh (sources `config/zsh/env.zsh`) |
-| `.zprofile` | login shells: brew shellenv, then re-applies `~/.pybin` |
+| `.zprofile` | login zsh: reapplies the shared Linux PATH setup |
 | `.env.sh` | `BASH_ENV` for non-interactive bash |
-| `config/zsh/env.zsh` | **shared environment** for zsh + bash: PATH (idempotent), tool flags, keys |
+| `config/zsh/env.zsh` | shared environment for optional zsh and non-interactive Bash |
 | `.bash_aliases` | aliases/functions shared by zsh and bash |
 | `bin/` | CLI scripts (chat-*, helpers); `~/bin` symlinks here |
 | `.secrets.example` | template for `~/.secrets` — copy, fill, `chmod 600` |
+| `config/shell/path.sh` | shared POSIX PATH setup for shells and desktop applications |
+| `config/uwsm/env.d/99-dotfiles-path` | applies PATH after packaged Omarchy/mise desktop setup |
 
-The Python default is the system interpreter: `~/.pybin` shims shadow
-Homebrew's `python3`/`pip3`. Keys live in `~/.secrets` (600), sourced by
-`env.zsh` for zsh and for non-interactive Bash when `BASH_ENV` points to
-`~/.env.sh`. Interactive Bash loads secrets directly from `~/.bashrc`.
+Keys live in `~/.secrets` (600), sourced by `env.zsh` for zsh and for
+non-interactive Bash when `BASH_ENV` points to `~/.env.sh`. Interactive Bash
+loads secrets directly from `~/.bashrc`.
+
+## PATH
+
+`~/.config/shell/path.sh` links to the tracked helper. It puts
+`~/.local/bin` first, removes duplicate and empty entries, and removes the
+installer spelling `~/.local/share/../bin`. Other entries retain their
+order. Omarchy supplies mise shims; `~/bin` is appended when it exists.
+The Linux configuration no longer injects macOS paths or Python shims.
+
+Setup loads PATH before Bash's interactive guard and again after interactive
+tool initialization. It removes the old uv-generated PATH source lines from
+`.bashrc`, `.bash_profile`, and `.profile`, and installs the helper in login
+profiles without creating a `.bash_profile` that would hide `.profile`.
+The UWSM hook handles future desktop sessions.
+
+For an existing shell, run `source ~/.config/shell/path.sh`; already-running
+applications retain their inherited environment. New desktop sessions load
+the UWSM hook automatically.
+
+Check normalization and command precedence with `bash tests/test_path.sh`.
 
 ## Bash secrets
 
 `setup.sh` appends a readable-file, interactive-only secrets loader to
 `~/.bashrc` without replacing existing configuration or duplicating the
-loader on reruns. Interactive Bash ignores `BASH_ENV`; loading secrets
-directly avoids importing the shared environment's macOS-specific settings.
+loader on reruns. Interactive Bash ignores `BASH_ENV`; its direct loader
+keeps credentials independent of non-interactive environment setup.
 
 Use explicit `export` assignments in `~/.secrets` so child processes inherit
 the keys. A missing secrets file is harmless.
@@ -39,16 +60,27 @@ loading and setup idempotence with `bash tests/test_bash_secrets.sh`.
 
 ## First-time setup
 
-Prerequisites: git, Homebrew (macOS). Keys are **never** in this repo.
+Prerequisites: Omarchy, Bash, and git. Keys are **never** in this repo.
 
 ```sh
 cd ~
-git clone https://github.com/deven367/dotfiles
+git clone --branch omarchy https://github.com/deven367/dotfiles
 chmod +x dotfiles/setup.sh
 bash dotfiles/setup.sh
 ```
 
 Then: `vim ~/.secrets` (fill in keys, `chmod 600`), open a new shell.
+
+For Bash, setup appends a guarded `~/.bash_aliases` loader to `~/.bashrc`
+without replacing existing configuration or duplicating it on reruns.
+On Omarchy, its defaults load first, then your aliases. Existing sessions
+can reload with `source ~/.bashrc`. Check setup and startup behavior with
+`bash tests/test_bash_startup.sh`.
+
+The Slurm queue shortcut is `sjobs` (`squeue --me --sort=+i`); use it on
+a Slurm host. `jobs` stays the shell builtin required by prompt hooks.
+If an existing shell still has the old alias, run
+`unalias jobs; source ~/.bashrc` once.
 
 ## Quartz interactive jobs
 
