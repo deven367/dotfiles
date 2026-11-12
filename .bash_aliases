@@ -118,7 +118,8 @@ a cdd="conda deactivate"
 a mktorch="conda create -yn torch python=3.10"
 a cals="conda env list"
 a gs='git status'
-a l='ls -lFh'
+# Long, human-readable listing including hidden entries except . and ..
+a l='ls -lAh'
 a ll='ls -laF'
 a t="todo.sh"
 a push="git push"
