@@ -1,5 +1,6 @@
 # Shared environment for optional zsh and non-interactive bash on Omarchy.
-# Interactive Bash loads credentials directly, without the rest of this file.
+# Interactive Bash loads credentials directly, without the rest of this file;
+# non-interactive Bash reaches this file through BASH_ENV=~/.env.sh.
 # POSIX-compatible and safe to source repeatedly.
 
 # API keys (chmod 600, never commit).

@@ -18,11 +18,12 @@ secrets, and alias loaders without replacing its existing configuration.
 | `bin/` | CLI scripts (chat-*, helpers); `~/bin` symlinks here |
 | `.secrets.example` | template for `~/.secrets` — copy, fill, `chmod 600` |
 | `config/shell/path.sh` | shared POSIX PATH setup for shells and desktop applications |
+| `config/uwsm/env.d/98-dotfiles-bash-env` | exports `BASH_ENV` to the desktop session |
 | `config/uwsm/env.d/99-dotfiles-path` | applies PATH after packaged Omarchy/mise desktop setup |
 
 Keys live in `~/.secrets` (600), sourced by `env.zsh` for zsh and for
-non-interactive Bash when `BASH_ENV` points to `~/.env.sh`. Interactive Bash
-loads secrets directly from `~/.bashrc`.
+non-interactive Bash through `BASH_ENV=~/.env.sh`, which `~/.bashrc` and the
+UWSM hook export. Interactive Bash loads secrets directly from `~/.bashrc`.
 
 ## PATH
 
@@ -46,16 +47,26 @@ Check normalization and command precedence with `bash tests/test_path.sh`.
 
 ## Bash secrets
 
-`setup.sh` appends a readable-file, interactive-only secrets loader to
-`~/.bashrc` without replacing existing configuration or duplicating the
-loader on reruns. Interactive Bash ignores `BASH_ENV`; its direct loader
-keeps credentials independent of non-interactive environment setup.
+Secrets load in interactive and non-interactive Bash:
+
+- **Interactive:** `setup.sh` appends a readable-file, interactive-only
+  loader to `~/.bashrc`. Interactive Bash ignores `BASH_ENV`, so it needs
+  this direct loader.
+- **Non-interactive** (`bash -c`, scripts, agents): Bash reads only
+  `$BASH_ENV`. `setup.sh` exports `BASH_ENV=~/.env.sh` above `~/.bashrc`'s
+  interactive guard (login, TTY, and SSH shells) and links
+  `config/uwsm/env.d/98-dotfiles-bash-env` for the desktop session. `.env.sh`
+  sources `env.zsh`, which sources `~/.secrets`. Only the path enters the
+  session environment; non-Bash GUI processes do not see the keys.
+
+Setup preserves existing configuration and does not duplicate lines on reruns.
 
 Use explicit `export` assignments in `~/.secrets` so child processes inherit
 the keys. A missing secrets file is harmless.
 
 For an existing installation, rerun `bash ~/dotfiles/setup.sh`, then open a
-new Bash shell or run `source ~/.bashrc` in the current one. Check secrets
+new Bash shell or run `source ~/.bashrc` in the current one. Log out and back
+in so the desktop session picks up `BASH_ENV`. Check secrets
 loading and setup idempotence with `bash tests/test_bash_secrets.sh`.
 
 ## First-time setup

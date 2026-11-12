@@ -26,6 +26,25 @@ for run in 1 2; do
   '
 done
 
+# Non-interactive Bash started from an interactive shell loads secrets itself
+# through the BASH_ENV that .bashrc exports, not only by inheritance.
+env -u BASH_ENV HOME="$home" bash --noprofile --rcfile "$home/.bashrc" -ic '
+  set -eu
+  [[ $BASH_ENV == "$HOME/.env.sh" ]]
+  env -u DOTFILES_SECRET_CHECK -u DOTFILES_SECRET_LOADS bash -c '\''
+    [[ $DOTFILES_SECRET_CHECK == fixture-only ]]
+  '\''
+'
+
+# The desktop session hook gives non-interactive Bash the same secrets.
+env -u BASH_ENV HOME="$home" bash --noprofile --norc -c '
+  set -eu
+  [[ ! -v DOTFILES_SECRET_CHECK ]]
+  . "$HOME/.config/uwsm/env.d/98-dotfiles-bash-env"
+  [[ $BASH_ENV == "$HOME/.env.sh" ]]
+  bash -c '\''[[ $DOTFILES_SECRET_CHECK == fixture-only ]]'\''
+'
+
 # Explicitly using .bashrc as BASH_ENV must not source credentials.
 HOME="$home" BASH_ENV="$home/.bashrc" bash -c '
   set -eu
@@ -38,6 +57,10 @@ rm "$home/.secrets"
 HOME="$home" bash --noprofile --rcfile "$home/.bashrc" -ic '
   set -eu
   [[ $DOTFILES_STARTUP_CHECK == preserved ]]
+  [[ ! -v DOTFILES_SECRET_CHECK && ! -v DOTFILES_SECRET_LOADS ]]
+'
+HOME="$home" BASH_ENV="$home/.env.sh" bash -c '
+  set -eu
   [[ ! -v DOTFILES_SECRET_CHECK && ! -v DOTFILES_SECRET_LOADS ]]
 '
 printf 'Bash secrets checks passed\n'

@@ -14,6 +14,7 @@ link "$HOME/dotfiles/.zprofile" "$HOME/.zprofile"
 link "$HOME/dotfiles/.env.sh" "$HOME/.env.sh"
 link "$HOME/dotfiles/config/zsh/env.zsh" "$HOME/.config/zsh/env.zsh"
 link "$HOME/dotfiles/config/shell/path.sh" "$HOME/.config/shell/path.sh"
+link "$HOME/dotfiles/config/uwsm/env.d/98-dotfiles-bash-env" "$HOME/.config/uwsm/env.d/98-dotfiles-bash-env"
 link "$HOME/dotfiles/config/uwsm/env.d/99-dotfiles-path" "$HOME/.config/uwsm/env.d/99-dotfiles-path"
 
 # Replace uv's generated PATH hooks, not its binaries or installer files.
@@ -35,6 +36,17 @@ bash_path_early="$bash_path # dotfiles: before interactive guard"
 if ! grep -Fqx "$bash_path_early" "$HOME/.bashrc" 2>/dev/null; then
     bashrc_tmp=$(mktemp)
     printf '%s\n' "$bash_path_early" > "$bashrc_tmp"
+    [[ ! -f "$HOME/.bashrc" ]] || cat "$HOME/.bashrc" >> "$bashrc_tmp"
+    cat "$bashrc_tmp" > "$HOME/.bashrc"
+    rm -f "$bashrc_tmp"
+fi
+
+# Non-interactive Bash reads only $BASH_ENV; export it before the interactive
+# guard so login, TTY, and SSH shells pass it to child scripts.
+bash_env='[[ -r "$HOME/.env.sh" ]] && export BASH_ENV="${BASH_ENV:-$HOME/.env.sh}" # dotfiles: before interactive guard'
+if ! grep -Fqx "$bash_env" "$HOME/.bashrc" 2>/dev/null; then
+    bashrc_tmp=$(mktemp)
+    printf '%s\n' "$bash_env" > "$bashrc_tmp"
     [[ ! -f "$HOME/.bashrc" ]] || cat "$HOME/.bashrc" >> "$bashrc_tmp"
     cat "$bashrc_tmp" > "$HOME/.bashrc"
     rm -f "$bashrc_tmp"
