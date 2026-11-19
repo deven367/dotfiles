@@ -37,11 +37,15 @@ if [ -f /etc/profile.d/modules.sh ]; then
     . /etc/profile.d/modules.sh
     [ -f "$HOME/.modules" ] && . "$HOME/.modules"
 fi
-# --- scratch cache (/scratch mounts on compute nodes only) ---
-if [ -d /scratch/local/demistry ]; then
+# --- scratch cache (/scratch mounts on compute nodes only, node-local) ---
+if [ -d /scratch/local ] && mkdir -p /scratch/local/demistry/.cache 2>/dev/null && [ -w /scratch/local/demistry/.cache ]; then
+    export XDG_CACHE_HOME=/scratch/local/demistry/.cache
     export PIP_CACHE_DIR=/scratch/local/demistry/.cache/pip
     export UV_CACHE_DIR=/scratch/local/demistry/.cache/uv
     export HF_HOME=/scratch/local/demistry/.cache/huggingface
+    export TORCH_HOME=/scratch/local/demistry/.cache/torch
+    export TRITON_CACHE_DIR=/scratch/local/demistry/.cache/triton
+    export TORCHINDUCTOR_CACHE_DIR=/scratch/local/demistry/.cache/torchinductor
     export UV_LINK_MODE=copy
 fi
 # --- llama.cpp runtime libs (idempotent; nested shells re-source env.zsh) ---
